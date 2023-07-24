@@ -120,19 +120,20 @@ void luahook::luahook_init(){
 		{"base", 0x00400000},
 		{"lua_base", (uintptr_t)GetModuleHandleA("lua51.dll")},
 		{"lua_call",0x6870},
+		{"lua_createtable",0x69D0}, // unused
 		{"lua_error",0x23030}, // unused
 		{"lua_getfield",0x6C90},
 		{"lua_gettop",0x6E20},
 		{"lua_iscfunction",0x6F00}, // unused, not initalized
-		{"lua_isnumber",0x6F30}, // unused, not initalized
+		{"lua_isnumber",0x6F30},
 		{"lua_isstring",0x6F80},
-		{"lua_loadstring",0x29C20},
+		{"lua_loadstring",0x29C20}, // unused-ish
 		{"lua_newstate",0x3E150}, // unused, not initalized
 		{"lua_newthread",0x7070}, // unused, not initalized
 		{"lua_next",0x7140},
 		{"lua_objlen",0x7190}, // unused
 		{"lua_pcall",0x71F0},
-		{"lua_pushcclosure",0x72A0},
+		{"lua_pushcclosure",0x72A0}, // unused
 		{"lua_pushboolean",0x7270},
 		{"lua_pushinteger",0x7360},
 		{"lua_pushnil",0x7410},
@@ -140,10 +141,11 @@ void luahook::luahook_init(){
 		{"lua_pushstring",0x7470},
 		{"lua_pushvalue",0x7520},
 		{"lua_rawgeti",0x7610},
-		{"lua_ref",0x43020},
+		{"lua_ref",0x43020}, // unused, not initalized
 		{"lua_register",0x430D0},
-		{"lua_resume",0x7890},
-		{"lua_setfield",0x79A0},
+		{"lua_resume",0x7890}, // unused
+		{"lua_setfield",0x79A0}, // unused
+		{"lua_settable",0x7B80}, // unused
 		{"lua_settop",0x7BF0},
 		{"lua_toboolean",0x7D00},
 		{"lua_tocfunction",0x7D20},
@@ -151,7 +153,7 @@ void luahook::luahook_init(){
 		{"lua_tolstring",0x7DB0},
 		{"lua_tonumber",0x7E30},
 		{"lua_type",0x7F10},
-		{"lua_unref",0x430F0},
+		{"lua_unref",0x430F0}, // unused, not initalized
 		{"lua_xmove",0x7FF0}, // unused
 		{"lualib_bit",0x44410},
 		{"lualib_debug",0x45050},
@@ -180,6 +182,8 @@ void luahook::luahook_init(){
 	logh("lua51.dll base found at: ", luahook::lua::luabase);
 	luahook::lua::call_a = luahook::lua::luabase + d_addy["lua_call"];
 	if (luahook::lua::call_a != NULL) logh("-->lua_call: ", luahook::lua::call_a);
+	luahook::lua::createtable_a = luahook::lua::luabase + d_addy["lua_createtable"];
+	if (luahook::lua::createtable_a != NULL) logh("-->lua_createtable: ", luahook::lua::createtable_a);
 	luahook::lua::error_a = luahook::lua::luabase + d_addy["lua_error"];
 	if (luahook::lua::error_a != NULL) logh("-->lua_error: ", luahook::lua::error_a);
 	luahook::lua::getfield_a = luahook::lua::luabase + d_addy["lua_getfield"];
@@ -228,6 +232,8 @@ void luahook::luahook_init(){
 	if (luahook::lua::resume_a != NULL) logh("-->lua_resume: ", luahook::lua::resume_a);
 	luahook::lua::setfield_a = luahook::lua::luabase + d_addy["lua_setfield"];
 	if (luahook::lua::setfield_a != NULL) logh("-->lua_setfield: ", luahook::lua::setfield_a);
+	luahook::lua::settable_a = luahook::lua::luabase + d_addy["lua_settable"];
+	if (luahook::lua::settable_a != NULL) logh("-->lua_settable: ", luahook::lua::settable_a);
 	luahook::lua::settop_a = luahook::lua::luabase + d_addy["lua_settop"];
 	if (luahook::lua::settop_a != NULL) logh("-->lua_settop: ", luahook::lua::settop_a);
 	luahook::lua::toboolean_a = luahook::lua::luabase + d_addy["lua_toboolean"];
@@ -264,6 +270,7 @@ void luahook::luahook_init(){
 	luahook::lua::luaL_error = (luahook::lua::luaL51_error)luahook::lua::error_a;
 	luahook::lua::lua_getfield = (luahook::lua::lua51_getfield)luahook::lua::getfield_a;
 	luahook::lua::lua_gettop = (luahook::lua::lua51_gettop)luahook::lua::gettop_a;
+	luahook::lua::lua_isnumber = (luahook::lua::lua51_isnumber)luahook::lua::isnumber_a;
 	luahook::lua::lua_isstring = (luahook::lua::lua51_isstring)luahook::lua::isstring_a;
 	luahook::lua::luaL_loadstring = (luahook::lua::luaL51_loadstring)luahook::lua::loadstring_a;
 	luahook::lua::lua_next = (luahook::lua::lua51_next)luahook::lua::next_a;
@@ -910,7 +917,6 @@ int luahook::beefcake::CreateWand(lua_State* L)
 	luahook::lua::lua_pushinteger(L, reloadspeed);
 	if (luahook::lua::lua_pcall(L, 4, 0, 0) != 0)
 		return 0;
-	//luahook::lua::lua_settop(L, 0);
 	luahook::lua::lua_pushinteger(L, wand);
 	return 1;
 }
@@ -932,7 +938,8 @@ int luahook::beefcake::SpawnPerk(lua_State* L)
 	luahook::lua::lua_pushstring(L, perk);
 	if (luahook::lua::lua_pcall(L, 3, 1, 0) != 0)
 		return 0;
-	return 1;
+	lua_pop(L, 4);
+	return 0;
 }
 
 int luahook::beefcake::SpawnSpell(lua_State* L)
@@ -948,7 +955,8 @@ int luahook::beefcake::SpawnSpell(lua_State* L)
 	luahook::lua::lua_pushnumber(L, y);
 	if (luahook::lua::lua_pcall(L, 3, 1, 0) != 0)
 		return 0;
-	return 1;
+	lua_pop(L, 3);
+	return 0;
 }
 
 int luahook::beefcake::SpawnFlask(lua_State* L)
@@ -966,13 +974,60 @@ int luahook::beefcake::SpawnFlask(lua_State* L)
 	if (luahook::lua::lua_pcall(L, 3, 1, 0) != 0)
 		return 0;
 	int pot = (int)luahook::lua::lua_tonumber(L, -1);
+	lua_pop(L, 3);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "AddMaterialInventoryMaterial");
 	luahook::lua::lua_pushinteger(L, pot);
 	luahook::lua::lua_pushstring(L, flask);
 	luahook::lua::lua_pushnumber(L, amount);
 	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0)
 		return 0;
-	luahook::lua::lua_pushinteger(L, pot);
+	lua_pop(L, 3);
+	return 0;
+}
+
+int luahook::beefcake::EntityGetChild(lua_State* L)
+{
+	int top = luahook::lua::lua_gettop(L);
+
+	if (luahook::lua::lua_gettop(L) != 2)
+		return 0;
+
+	if (luahook::lua::lua_isnumber(L, 1) && luahook::lua::lua_isstring(L, 2))
+	{
+		int entity = (int)luahook::lua::lua_tonumber(L, 1);
+		const char* entity2find = luahook::lua::lua_tolstring(L, 2, NULL);
+		luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetAllChildren");
+		luahook::lua::lua_pushinteger(L, entity);
+		if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
+			return 0;
+
+		luahook::lua::lua_pushnil(L);
+		while (luahook::lua::lua_next(L, -2) != 0)
+		{
+			if (luahook::lua::lua_type(L, -2) != LUA_TNIL)
+			{
+				int child = (int)luahook::lua::lua_tonumber(L, -1);
+				luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetName");
+				luahook::lua::lua_pushinteger(L, child);
+				if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
+					return 0;
+
+				if (luahook::lua::lua_isstring(L, -1))
+				{
+					const char* child_name = luahook::lua::lua_tolstring(L, -1, NULL);
+					if (strcmp(child_name, entity2find) == 0)
+					{
+						return 2;
+					}
+				}
+				lua_pop(L, 1);
+			}
+			lua_pop(L, 1);
+		}
+	}
+
+	luahook::lua::lua_settop(L, top);
+	luahook::lua::lua_pushnil(L);
 	return 1;
 }
 
@@ -990,7 +1045,6 @@ int luahook::beefcake::GetPlayerQInventory(lua_State* L)
 	luahook::lua::lua_pushinteger(L, player);
 	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
 		return 0;
-
 	luahook::lua::lua_pushnil(L);
 	while (luahook::lua::lua_next(L, -2) != 0)
 	{
@@ -1007,7 +1061,7 @@ int luahook::beefcake::GetPlayerQInventory(lua_State* L)
 				const char* child_name = luahook::lua::lua_tolstring(L, -1, NULL);
 				if (strcmp(child_name, "inventory_quick") == 0)
 				{
-					return 2; // im failing to see why using child here returns nonsense but this works so idk.
+					return 2;
 				}
 			}
 			lua_pop(L, 1);
@@ -1103,6 +1157,7 @@ int luahook::beefcake::ForceSeed(lua_State* L)
 		return 0;
 	int seed = luahook::lua::lua_tointeger(L, 1);
 	writeINT(luahook::noita::seed, seed);
+	lua_pop(L, 1);
 	return 0;
 }
 
@@ -1165,7 +1220,8 @@ void __fastcall luahook::noita::nlib_hook(lua_State* L)
 	luahook::lua::luaL_register(L, "task", taskfuncs);
 	// register our globals
 	lua_register(L, "AddSpellToWand", luahook::beefcake::AddSpellToWand);			
-	lua_register(L, "SetWorldTime", luahook::beefcake::SetWorldTime);			
+	lua_register(L, "SetWorldTime", luahook::beefcake::SetWorldTime);
+	lua_register(L, "EntityGetChild", luahook::beefcake::EntityGetChild);
 	lua_register(L, "ExecuteThroughLoader", luahook::beefcake::ExecuteThroughLoader);	
 	lua_register(L, "CreateWand", luahook::beefcake::CreateWand);				
 	lua_register(L, "SpawnPerk", luahook::beefcake::SpawnPerk);			
