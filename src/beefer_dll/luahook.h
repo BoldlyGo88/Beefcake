@@ -29,6 +29,7 @@
 #define lua_setglobal(L,s)	luahook::lua::lua_setfield(L, LUA_GLOBALSINDEX, (s))
 #define lua_getglobal(L,s)	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, (s))
 #define lua_pop(L,n)		luahook::lua::lua_settop(L, -(n)-1)
+#define lua_newtable(L)		luahook::lua::lua_createtable(L, 0, 0)
 
 class luahook {
 public:
@@ -42,6 +43,7 @@ public:
 		typedef double lua_Number;
 		typedef ptrdiff_t lua_Integer;
 		typedef void(__cdecl* lua51_call)(lua_State* L, int nargs, int nresults);
+		typedef void(__cdecl* lua51_createtable)(lua_State* L, int narr, int nrec);
 		typedef int(__cdecl* luaL51_error)(lua_State* L, const char* fmt, ...);
 		typedef void(__cdecl* lua51_getfield)(lua_State* L, int idx, const char* k);
 		typedef int(__cdecl* lua51_gettop)(lua_State* L);
@@ -66,6 +68,7 @@ public:
 		typedef void(__cdecl* luaL51_register)(lua_State* L, const char* libname, const luaL_Reg* l);
 		typedef int(__cdecl* lua51_resume)(lua_State* L, int narg);
 		typedef void(__cdecl* lua51_setfield)(lua_State* L, int idx, const char* k);
+		typedef void(__cdecl* lua51_settable)(lua_State* L, int index);
 		typedef void(__cdecl* lua51_settop)(lua_State* L, int idx);
 		typedef int(__cdecl* lua51_toboolean)(lua_State* L, int idx);
 		typedef lua_CFunction(__cdecl* lua51_tocfunction)(lua_State* L, int idx);
@@ -87,6 +90,7 @@ public:
 		// pointers to all the defined lua functions from above
 		inline static uintptr_t luabase;
 		inline static uintptr_t call_a;
+		inline static uintptr_t createtable_a;
 		inline static uintptr_t error_a;
 		inline static uintptr_t getfield_a;
 		inline static uintptr_t gettop_a;
@@ -111,6 +115,7 @@ public:
 		inline static uintptr_t register_a;
 		inline static uintptr_t resume_a;
 		inline static uintptr_t setfield_a;
+		inline static uintptr_t settable_a;
 		inline static uintptr_t settop_a;
 		inline static uintptr_t toboolean_a;
 		inline static uintptr_t tocfunction_a;
@@ -131,6 +136,7 @@ public:
 
 		// function initiates
 		inline static lua51_call lua_call;
+		inline static lua51_createtable lua_createtable;
 		inline static luaL51_error luaL_error;
 		inline static lua51_getfield lua_getfield;
 		inline static lua51_gettop lua_gettop;
@@ -155,6 +161,7 @@ public:
 		inline static luaL51_register luaL_register;
 		inline static lua51_resume lua_resume;
 		inline static lua51_setfield lua_setfield;
+		inline static lua51_settable lua_settable;
 		inline static lua51_settop lua_settop;
 		inline static lua51_toboolean lua_toboolean;
 		inline static lua51_tocfunction lua_tocfunction;
@@ -204,6 +211,7 @@ public:
 		// Beefcake globals
 		static int AddSpellToWand(lua_State* L);
 		static int CreateWand(lua_State* L);
+		static int EntityGetChild(lua_State* L);
 		static int ExecuteThroughLoader(lua_State* L);
 		static int ForceSeed(lua_State* L);
 		static int GenomeGetHerdId(lua_State* L);
