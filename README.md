@@ -84,6 +84,12 @@ local wand = CreateWand("EXAMPLE_WAND", "data/items_gfx/wands/wand_0007.png", 25
 -- if mana_charge is zero or nil it defaults to 100
 -- if mana_max is zero or nil it defaults to 75
 ```
+- EntityGetChild(entity: int, child_component_name: string)
+```lua
+local rightarm = EntityGetChild(LocalPlayer.GetID(), "arm_r");
+
+-- returns the components id
+```
 - ExecuteThroughLoader(script: string)
 ```lua
 ExecuteThroughLoader("local x,y = LocalPlayer.GetPosition(); EntityLoad('data/entities/flute.xml',x,y);");
@@ -145,6 +151,25 @@ local x,y = LocalPlayer.GetPosition();
 SpawnSpell("BLACK_HOLE", x, y);
 ```
 
+#### Input Library
+- input.LeftMouseDown()
+```lua
+if input.LeftMouseDown() then
+  GamePrint("Left mouse is down!");
+end;
+
+-- works best within a script being executed every frame
+-- return return true or false depending on if the left mouse button is being pressed
+```
+- input.RightMouseDown()
+```lua
+if input.RightMouseDown() then
+  GamePrint("Right mouse is down!");
+end;
+
+-- works best within a script being executed every frame
+-- return return true or false depending on if the right mouse button is being pressed
+```
 #### LocalPlayer Library
 - LocalPlayer.AddPerk(perk_id: string)
 ```lua
@@ -238,6 +263,13 @@ LocalPlayer.SetPosition(100, -50);
 ```
 
 #### Task Library
+- task.ForceIBB(status: boolean)
+```lua
+task.ForceIBB(true);
+print(GameIsBetaBuild()) ----> true
+
+-- will force IsBetaBuild to be either true or false
+```
 - task.GetCFunctionPointer(c_function: function)
 ```lua
 print(string.format("%x", task.GetCFunctionPointer(EntityLoad)));
