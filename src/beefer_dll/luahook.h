@@ -188,6 +188,7 @@ public:
 
 		// pointers to noita functions, values, etc in memory
 		// found mostly with Ghidra
+		inline static uintptr_t isbetabuild;
 		inline static uintptr_t noitabase;
 		inline static uintptr_t security_cookie;
 		inline static uintptr_t seed;
@@ -221,7 +222,14 @@ public:
 		static int SpawnPerk(lua_State* L);
 		static int SpawnSpell(lua_State* L);
 
+		// input library
+		static int MouseLeftDown(lua_State* L);
+		static int MouseRightDown(lua_State* L);
+		//static int KeyDown(lua_State* L);
+
 		// task library
+		static int ForceIsBetaBuild(lua_State* L);
+		static int ForceIsDevBuild(lua_State* L);
 		static int GetCFunctionPointer(lua_State* L);
 		static int GetState(lua_State* L);
 		static int ReadMemory(lua_State* L);
