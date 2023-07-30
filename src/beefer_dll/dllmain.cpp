@@ -29,6 +29,10 @@ BACK:
         luahook::lua::lua_pcall(luahook::noita::first, 2, 0, 0);
         goto BACK;
     }
+    else if (piss == "current_state") {
+        std::cout << std::hex << (int)luahook::noita::first << std::endl;
+        goto BACK;
+    }
     else {
         luahook::lua::luaL_loadstring(luahook::noita::first, piss.c_str());
         luahook::lua::lua_pcall(luahook::noita::first, 0, -1, 0);
