@@ -177,6 +177,18 @@ LocalPlayer.AddPerk("CRITICAL_HIT");
 
 -- unlike SpawnPerk, LocalPlayer.AddPerk gives the perk directly to the player
 ```
+- LocalPlayer.GetAir()
+```lua
+local air = LocalPlayer.GetAir();
+
+-- returns the players current air in lungs
+```
+- LocalPlayer.GetClimbHeight()
+```lua
+local climb_height = LocalPlayer.GetClimbHeight();
+
+-- returns the amount of pixels that player will "climb" or be able to treat like a step
+```
 - LocalPlayer.GetGold()
 ```lua
 local gold = LocalPlayer.GetGold();
@@ -219,8 +231,25 @@ if LocalPlayer.GetIsIgnored() then
 else
   print("Enemies are not ignoring the player!");
 end;
-
 -- returns if the player is currently ignored by enemies or not
+```
+- LocalPlayer.GetJetpack()
+```lua
+local jetpack = LocalPlayer.GetJetpack();
+
+-- returns the players current jetpack fuel
+```
+- LocalPlayer.GetJetpackRecharge()
+```lua
+local r_on_air, r_on_ground = LocalPlayer.GetJetpackRecharge();
+
+-- returns the players current recharge rates while in air and on ground
+```
+- LocalPlayer.GetMaxAir()
+```lua
+local max_air = LocalPlayer.GetMaxAir();
+
+-- returns the players max lung capacity
 ```
 - LocalPlayer.GetMaxHealth()
 ```lua
@@ -228,11 +257,35 @@ local max_health = LocalPlayer.GetMaxHealth();
 
 -- returns the players max health
 ```
+- LocalPlayer.GetNeedsAir()
+```lua
+local needs_air = LocalPlayer.GetNeedsAir();
+
+-- returns true or false depending on if the player needs air to survive
+```
 - LocalPlayer.GetPosition()
 ```lua
 local x,y = LocalPlayer.GetPosition();
 
 -- returns the players x and y position
+```
+- LocalPlayer.GetStomachSize()
+```lua
+local stomach_cap = LocalPlayer.GetStomachSize();
+
+-- returns the players max stomach capacity
+```
+- LocalPlayer.SetAir(air: float)
+```lua
+LocalPlayer.SetAir(10);
+
+-- 7 is the default
+```
+- LocalPlayer.SetClimbHeight(int: climb_height_pixels)
+```lua
+LocalPlayer.SetClimbHeight(100);
+
+-- 4 is the default
 ```
 - LocalPlayer.SetGold(gold: int)
 ```lua
@@ -253,13 +306,33 @@ LocalPlayer.SetIsIgnored(true);
 
 -- this determines if enemies will ignore the player or not
 ```
+- LocalPlayer.SetJetpack(jetpack: float)
+```lua
+LocalPlayer.SetJetpack(10);
+```
+- LocalPlayer.SetMaxAir(air: float)
+```lua
+LocalPlayer.SetMaxAir(10);
+
+-- 7 is the default
+```
 - LocalPlayer.SetMaxHealth(health: number)
 ```lua
 LocalPlayer.SetMaxHealth(1000);
 ```
+- LocalPlayer.SetNeedsAir(needed: boolean)
+```lua
+LocalPlayer.SetNeedsAir(false);
+```
 - LocalPlayer.SetPosition(x_pos: int, y_pos: int)
 ```lua
 LocalPlayer.SetPosition(100, -50);
+```
+- LocalPlayer.SetStomachSize(capacity: int64)
+```lua
+LocalPlayer.SetStomachSize(100000)
+
+-- default is 7500
 ```
 
 #### Task Library
