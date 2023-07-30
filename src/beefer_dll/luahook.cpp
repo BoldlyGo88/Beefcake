@@ -124,11 +124,13 @@ void luahook::luahook_init(){
 		{"lua_createtable",0x69D0}, // unused
 		{"lua_error",0x23030}, // unused
 		{"lua_getfield",0x6C90},
+		{"lua_getmetatable", 0x6D40}, // unused, not initalized
 		{"lua_gettop",0x6E20},
 		{"lua_iscfunction",0x6F00}, // unused, not initalized
 		{"lua_isnumber",0x6F30},
 		{"lua_isstring",0x6F80},
 		{"lua_loadstring",0x29C20}, // unused-ish
+		{"lua_newmetatable", 0x6640},
 		{"lua_newstate",0x3E150}, // unused, not initalized
 		{"lua_newthread",0x7070}, // unused, not initalized
 		{"lua_next",0x7140},
@@ -146,6 +148,7 @@ void luahook::luahook_init(){
 		{"lua_register",0x430D0},
 		{"lua_resume",0x7890}, // unused
 		{"lua_setfield",0x79A0}, // unused
+		{"lua_setmetatable", 0x7A50},
 		{"lua_settable",0x7B80}, // unused
 		{"lua_settop",0x7BF0},
 		{"lua_toboolean",0x7D00},
@@ -166,6 +169,7 @@ void luahook::luahook_init(){
 		{"mod_api_table",0xBF5A54},
 		{"mod_status_setter",0x2429DB},
 		{"noita_functions_library",0x31BF20},
+		{"should_shutdown_check",0x241C6A},
 		{"world_seed",0xBF5A48},
 	};
 
@@ -178,7 +182,7 @@ void luahook::luahook_init(){
 	luahook::noita::isbetabuild = luahook::noita::noitabase + d_addy["betabuild_table"];
 	luahook::noita::noitalibrary_init = luahook::noita::noitabase + d_addy["noita_functions_library"];
 	logh("Noita Functions Library found at: ", luahook::noita::noitalibrary_init);
-	luahook::noita::lib = (luahook::noita::nlib)luahook::noita::noitalibrary_init;	
+	luahook::noita::lib = (luahook::noita::nlib)luahook::noita::noitalibrary_init;
 
 	luahook::lua::luabase = d_addy["lua_base"];
 	logh("lua51.dll base found at: ", luahook::lua::luabase);
@@ -190,6 +194,8 @@ void luahook::luahook_init(){
 	if (luahook::lua::error_a != NULL) logh("-->lua_error: ", luahook::lua::error_a);
 	luahook::lua::getfield_a = luahook::lua::luabase + d_addy["lua_getfield"];
 	if (luahook::lua::getfield_a != NULL) logh("-->lua_getfield: ", luahook::lua::getfield_a);
+	luahook::lua::getmetatable_a = luahook::lua::luabase + d_addy["lua_getmetatable"];
+	if (luahook::lua::getmetatable_a != NULL) logh("-->lua_getmetatable: ", luahook::lua::getmetatable_a);
 	luahook::lua::gettop_a = luahook::lua::luabase + d_addy["lua_gettop"];
 	if (luahook::lua::gettop_a != NULL) logh("-->lua_gettop: ", luahook::lua::gettop_a);
 	luahook::lua::iscfunction_a = luahook::lua::luabase + d_addy["lua_iscfunction"];
@@ -200,6 +206,8 @@ void luahook::luahook_init(){
 	if (luahook::lua::isstring_a != NULL) logh("-->lua_isstring: ", luahook::lua::isstring_a);
 	luahook::lua::loadstring_a = luahook::lua::luabase + d_addy["lua_loadstring"];
 	if (luahook::lua::loadstring_a != NULL) logh("-->lua_loadstring: ", luahook::lua::loadstring_a);
+	luahook::lua::newmetatable_a = luahook::lua::luabase + d_addy["lua_newmetatable"];
+	if (luahook::lua::newmetatable_a != NULL) logh("-->lua_newmetatable: ", luahook::lua::newmetatable_a);
 	luahook::lua::newstate_a = luahook::lua::luabase + d_addy["lua_newstate"];
 	if (luahook::lua::newstate_a != NULL) logh("-->lua_newstate: ", luahook::lua::newstate_a);
 	luahook::lua::newthread_a = luahook::lua::luabase + d_addy["lua_newthread"];
@@ -234,6 +242,8 @@ void luahook::luahook_init(){
 	if (luahook::lua::resume_a != NULL) logh("-->lua_resume: ", luahook::lua::resume_a);
 	luahook::lua::setfield_a = luahook::lua::luabase + d_addy["lua_setfield"];
 	if (luahook::lua::setfield_a != NULL) logh("-->lua_setfield: ", luahook::lua::setfield_a);
+	luahook::lua::setmetatable_a = luahook::lua::luabase + d_addy["lua_setmetatable"];
+	if (luahook::lua::setmetatable_a != NULL) logh("-->lua_setmetatable: ", luahook::lua::setmetatable_a);
 	luahook::lua::settable_a = luahook::lua::luabase + d_addy["lua_settable"];
 	if (luahook::lua::settable_a != NULL) logh("-->lua_settable: ", luahook::lua::settable_a);
 	luahook::lua::settop_a = luahook::lua::luabase + d_addy["lua_settop"];
@@ -271,10 +281,12 @@ void luahook::luahook_init(){
 	luahook::lua::lua_call = (luahook::lua::lua51_call)luahook::lua::call_a;
 	luahook::lua::luaL_error = (luahook::lua::luaL51_error)luahook::lua::error_a;
 	luahook::lua::lua_getfield = (luahook::lua::lua51_getfield)luahook::lua::getfield_a;
+	luahook::lua::lua_getmetatable = (luahook::lua::lua51_getmetatable)luahook::lua::getmetatable_a;
 	luahook::lua::lua_gettop = (luahook::lua::lua51_gettop)luahook::lua::gettop_a;
 	luahook::lua::lua_isnumber = (luahook::lua::lua51_isnumber)luahook::lua::isnumber_a;
 	luahook::lua::lua_isstring = (luahook::lua::lua51_isstring)luahook::lua::isstring_a;
 	luahook::lua::luaL_loadstring = (luahook::lua::luaL51_loadstring)luahook::lua::loadstring_a;
+	luahook::lua::lua_newmetatable = (luahook::lua::luaL51_newmetatable)luahook::lua::newmetatable_a;
 	luahook::lua::lua_next = (luahook::lua::lua51_next)luahook::lua::next_a;
 	luahook::lua::lua_objlen = (luahook::lua::lua51_objlen)luahook::lua::objlen_a;
 	luahook::lua::lua_pcall = (luahook::lua::lua51_pcall)luahook::lua::pcall_a;
@@ -289,6 +301,7 @@ void luahook::luahook_init(){
 	luahook::lua::luaL_register = (luahook::lua::luaL51_register)luahook::lua::register_a;
 	luahook::lua::lua_resume = (luahook::lua::lua51_resume)luahook::lua::resume_a;
 	luahook::lua::lua_setfield = (luahook::lua::lua51_setfield)luahook::lua::setfield_a;
+	luahook::lua::lua_setmetatable = (luahook::lua::lua51_setmetatable)luahook::lua::setmetatable_a;
 	luahook::lua::lua_settop = (luahook::lua::lua51_settop)luahook::lua::settop_a;
 	luahook::lua::lua_toboolean = (luahook::lua::lua51_toboolean)luahook::lua::toboolean_a;
 	luahook::lua::lua_tocfunction = (luahook::lua::lua51_tocfunction)luahook::lua::tocfunction_a;
@@ -308,7 +321,7 @@ void luahook::luahook_init(){
 	system("cls");
 	logh("Noita base found at: ", luahook::noita::noitabase);
 	logh("lua51.dll base found at: ", luahook::lua::luabase);
-	logh("Certified: ", d_addy.size() - 3);
+	logh("Certified: ", (int)d_addy.size());
 	logh("Hooking Noita Functions Library at: ", luahook::noita::noitalibrary_init, " with a size of 9 bytes");
 	// hook the original library function with nlib_hook, takes 9 bytes
 	// in a lot of cases you would normally restore the detour, in this case the function is called during every new lua state from mods, noita, luacomponents, etc..
@@ -331,11 +344,19 @@ LOOP:
 	else {
 		logh("MAPITable found: ", address);
 		logh("IsModded variable found: ", address + d_addy["mod_api_is_modded_offset"]);
-		logh("Changing mod status..");
+		logh("Shutdown check found: ", luahook::noita::noitabase + d_addy["should_shutdown_check"]);
+		logh("Changing mod status & avoiding new game shutdown..");
 		// once mods are enabled, mod status is set every frame
 		// we need to disable the every frame check, then change our status to 0 (unmodded)
 		writeAOB(luahook::noita::noitabase + d_addy["mod_status_setter"], to_array({0xEB, 0x11}));
 		writeINT(address + 0x00000120, 0);
+		// this avoids the game from restarting every single time you press "new game"
+		// this feature could potentially cause unwanted crashes and save corruption due to memory leaks not being cleared
+		// it has potential to be removed in the future, i'll test a bit, or even maybe make it a setting that can be toggled on/off through the console
+		writeAOB(luahook::noita::noitabase + d_addy["should_shutdown_check"], to_array({ 0xEB, 0x06 }));
+		logh("Mod status set & shutdown cercumvented. Clearing in three.");
+		Sleep(3000);
+		system("cls");
 	}
 }
 
@@ -343,9 +364,89 @@ LOOP:
 int luahook::beefcake::GetPlayer(lua_State* L) {
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
 	luahook::lua::lua_pushstring(L, "player_unit");
-	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != LUA_OK)
+	{
+		return luahook::lua::luaL_error(L, "LocalPlayer.GetPlayer Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_rawgeti(L, -1, 1);
+	return 1;
+}
+
+int luahook::beefcake::GetPlayerAir(lua_State* L) {
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
+	luahook::lua::lua_pushstring(L, "player_unit");
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerAir Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_rawgeti(L, -1, 1);
+	int player = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
+	luahook::lua::lua_pushinteger(L, player);
+	luahook::lua::lua_pushstring(L, "DamageModelComponent");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerAir Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	int damage = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentGetValue2");
+	luahook::lua::lua_pushinteger(L, damage);
+	luahook::lua::lua_pushstring(L, "air_in_lungs");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerAir Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	float air = (float)luahook::lua::lua_tonumber(L, -1);
+	luahook::lua::lua_pushnumber(L, air);
+	return 1;
+}
+
+int luahook::beefcake::GetPlayerAirM(lua_State* L) {
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
+	luahook::lua::lua_pushstring(L, "player_unit");
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerAirM Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_rawgeti(L, -1, 1);
+	int player = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
+	luahook::lua::lua_pushinteger(L, player);
+	luahook::lua::lua_pushstring(L, "DamageModelComponent");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerAirM Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	int damage = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentGetValue2");
+	luahook::lua::lua_pushinteger(L, damage);
+	luahook::lua::lua_pushstring(L, "air_in_lungs_max");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerAirM Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	float air = (float)luahook::lua::lua_tonumber(L, -1);
+	luahook::lua::lua_pushnumber(L, air);
+	return 1;
+}
+
+int luahook::beefcake::GetPlayerClimb(lua_State* L) {
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
+	luahook::lua::lua_pushstring(L, "player_unit");
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerClimb Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_rawgeti(L, -1, 1);
+	int player = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
+	luahook::lua::lua_pushinteger(L, player);
+	luahook::lua::lua_pushstring(L, "CharacterDataComponent");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerClimb Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	int cdc = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentGetValue2");
+	luahook::lua::lua_pushinteger(L, cdc);
+	luahook::lua::lua_pushstring(L, "climb_over_y");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerClimb Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	int climb = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_pushinteger(L, climb);
 	return 1;
 }
 
@@ -359,15 +460,17 @@ int luahook::beefcake::SetWorldTime(lua_State* L) {
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
 	luahook::lua::lua_pushinteger(L, world);
 	luahook::lua::lua_pushstring(L, "WorldStateComponent");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetTime Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	int comp = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
 	luahook::lua::lua_pushinteger(L, comp);
 	luahook::lua::lua_pushstring(L, "time");
 	luahook::lua::lua_pushnumber(L, time);
-	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 3, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetTime Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_settop(L, 0);
 	return 0;
 }
@@ -379,15 +482,17 @@ int luahook::beefcake::ExecuteThroughLoader(lua_State* L)
 	const char* script = luahook::lua::lua_tolstring(L, 1, NULL);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
 	luahook::lua::lua_pushstring(L, "player_unit");
-	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "ExecuteThroughLoader Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_rawgeti(L, -1, 1);
 	int player = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
 	luahook::lua::lua_pushinteger(L, player);
 	luahook::lua::lua_pushstring(L, "LuaComponent");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "ExecuteThroughLoader Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	int lua = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ModTextFileSetContent");
 	luahook::lua::lua_pushstring(L, "data/scripts/empty.lua");
@@ -395,32 +500,37 @@ int luahook::beefcake::ExecuteThroughLoader(lua_State* L)
 	std::string encode = "\nComponentSetValue2(og_lua, 'enable_coroutines', '0'); ComponentSetValue2(og_lua, 'vm_type', 'ONE_PER_COMPONENT_INSTANCE'); ComponentSetValue2(og_lua, 'execute_every_n_frame', 80); ComponentSetValue2(og_lua, 'script_source_file', 'data/scripts/magic/player_biome_check.lua'); ModTextFileSetContent('data/scripts/empty.lua','');";
 	std::string code = "local og_lua = EntityGetFirstComponent(LocalPlayer.GetID(),'LuaComponent');\n" + skript + encode;
 	luahook::lua::lua_pushstring(L, code.c_str());
-	if (luahook::lua::lua_pcall(L, 2, 0, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 0, 0) != 0) {
+		return luahook::lua::luaL_error(L, "ExecuteThroughLoader Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
 	luahook::lua::lua_pushinteger(L, lua);
 	luahook::lua::lua_pushstring(L, "vm_type");
 	luahook::lua::lua_pushstring(L, "CREATE_NEW_EVERY_EXECUTION");
-	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0) {
+		return luahook::lua::luaL_error(L, "ExecuteThroughLoader Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
 	luahook::lua::lua_pushinteger(L, lua);
 	luahook::lua::lua_pushstring(L, "enable_coroutines");
 	luahook::lua::lua_pushinteger(L, 1);
-	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0) {
+		return luahook::lua::luaL_error(L, "ExecuteThroughLoader Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
 	luahook::lua::lua_pushinteger(L, lua);
 	luahook::lua::lua_pushstring(L, "script_source_file");
 	luahook::lua::lua_pushstring(L, "data/scripts/empty.lua");
-	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0) {
+		return luahook::lua::luaL_error(L, "ExecuteThroughLoader Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
 	luahook::lua::lua_pushinteger(L, lua);
 	luahook::lua::lua_pushstring(L, "execute_every_n_frame");
 	luahook::lua::lua_pushinteger(L, 1);
-	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0) {
+		return luahook::lua::luaL_error(L, "ExecuteThroughLoader Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_settop(L, 0);
 	return 0;
 }
@@ -428,35 +538,40 @@ int luahook::beefcake::ExecuteThroughLoader(lua_State* L)
 int luahook::beefcake::GetPlayerPos(lua_State* L) {
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
 	luahook::lua::lua_pushstring(L, "player_unit");
-	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerPos Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_rawgeti(L, -1, 1);
 	int player = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetTransform");
 	luahook::lua::lua_pushinteger(L, player);
-	if (luahook::lua::lua_pcall(L, 1, 2, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 1, 2, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerPos Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	return 2;
 }
 
 int luahook::beefcake::GetPlayerHealth(lua_State* L) {
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
 	luahook::lua::lua_pushstring(L, "player_unit");
-	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerHealth Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_rawgeti(L, -1, 1);
 	int player = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
 	luahook::lua::lua_pushinteger(L, player);
 	luahook::lua::lua_pushstring(L, "DamageModelComponent");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerHealth Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	int damage = (int)luahook::lua::lua_tonumber(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentGetValue2");
 	luahook::lua::lua_pushinteger(L, damage);
 	luahook::lua::lua_pushstring(L, "hp");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerHealth Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	int health = (int)luahook::lua::lua_tonumber(L, -1);
 	health = health * 25;
 	luahook::lua::lua_pushinteger(L, health);
@@ -466,45 +581,137 @@ int luahook::beefcake::GetPlayerHealth(lua_State* L) {
 int luahook::beefcake::GetPlayerHealthM(lua_State* L) {
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
 	luahook::lua::lua_pushstring(L, "player_unit");
-	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerHealthMax Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_rawgeti(L, -1, 1);
 	int player = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
 	luahook::lua::lua_pushinteger(L, player);
 	luahook::lua::lua_pushstring(L, "DamageModelComponent");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerHealthMax Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	int damage = (int)luahook::lua::lua_tonumber(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentGetValue2");
 	luahook::lua::lua_pushinteger(L, damage);
 	luahook::lua::lua_pushstring(L, "max_hp");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerHealthMax Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	int health = (int)luahook::lua::lua_tonumber(L, -1);
 	health = health * 25;
 	luahook::lua::lua_pushinteger(L, health);
 	return 1;
 }
 
+int luahook::beefcake::GetPlayerJetpack(lua_State* L) {
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
+	luahook::lua::lua_pushstring(L, "player_unit");
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerJetpack Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_rawgeti(L, -1, 1);
+	int player = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
+	luahook::lua::lua_pushinteger(L, player);
+	luahook::lua::lua_pushstring(L, "CharacterDataComponent");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerJetpack Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	int cdc = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentGetValue2");
+	luahook::lua::lua_pushinteger(L, cdc);
+	luahook::lua::lua_pushstring(L, "fly_time_max");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerJetpack Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	float fly = (float)luahook::lua::lua_tonumber(L, -1);
+	luahook::lua::lua_pushnumber(L, fly);
+	return 1;
+}
+
+int luahook::beefcake::GetPlayerJetpackRecharge(lua_State* L) {
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
+	luahook::lua::lua_pushstring(L, "player_unit");
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerJetpackRecharge Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_rawgeti(L, -1, 1);
+	int player = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
+	luahook::lua::lua_pushinteger(L, player);
+	luahook::lua::lua_pushstring(L, "CharacterDataComponent");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerJetpackRecharge Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	int cdc = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentGetValue2");
+	luahook::lua::lua_pushinteger(L, cdc);
+	luahook::lua::lua_pushstring(L, "fly_recharge_spd");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerJetpackRecharge Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	float flyrair = (float)luahook::lua::lua_tonumber(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentGetValue2");
+	luahook::lua::lua_pushinteger(L, cdc);
+	luahook::lua::lua_pushstring(L, "fly_recharge_spd_ground");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerJetpackRecharge Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	float flyrground = (float)luahook::lua::lua_tonumber(L, -1);
+	luahook::lua::lua_pushnumber(L, flyrair);
+	luahook::lua::lua_pushnumber(L, flyrground);
+	return 2;
+}
+
+int luahook::beefcake::GetPlayerNeedsAir(lua_State* L) {
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
+	luahook::lua::lua_pushstring(L, "player_unit");
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerNeedsAir Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_rawgeti(L, -1, 1);
+	int player = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
+	luahook::lua::lua_pushinteger(L, player);
+	luahook::lua::lua_pushstring(L, "DamageModelComponent");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerNeedsAir Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	int damage = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentGetValue2");
+	luahook::lua::lua_pushinteger(L, damage);
+	luahook::lua::lua_pushstring(L, "air_needed");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerNeedsAir Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	bool need = luahook::lua::lua_toboolean(L, -1);
+	luahook::lua::lua_pushboolean(L, need);
+	return 1;
+}
+
 int luahook::beefcake::GetPlayerGold(lua_State* L) {
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
 	luahook::lua::lua_pushstring(L, "player_unit");
-	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerGold Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_rawgeti(L, -1, 1);
 	int player = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
 	luahook::lua::lua_pushinteger(L, player);
 	luahook::lua::lua_pushstring(L, "WalletComponent");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerGold Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	int wallet = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentGetValue2");
 	luahook::lua::lua_pushinteger(L, wallet);
 	luahook::lua::lua_pushstring(L, "money");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerGold Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	return 1;
 }
 
@@ -515,19 +722,22 @@ int luahook::beefcake::GenomeGetHerdId(lua_State* L) {
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
 	luahook::lua::lua_pushinteger(L, entity);
 	luahook::lua::lua_pushstring(L, "GenomeDataComponent");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GenomeGetHerdId Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	int gdc = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentGetValue2");
 	luahook::lua::lua_pushinteger(L, gdc);
 	luahook::lua::lua_pushstring(L, "herd_id");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GenomeGetHerdId Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	int id = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "HerdIdToString");
 	luahook::lua::lua_pushinteger(L, id);
-	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GenomeGetHerdId Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	const char* herd_id = luahook::lua::lua_tolstring(L, -1, NULL);
 	luahook::lua::lua_pushstring(L, herd_id);
 	return 1;
@@ -536,21 +746,24 @@ int luahook::beefcake::GenomeGetHerdId(lua_State* L) {
 int luahook::beefcake::GetIgnored(lua_State* L) {
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
 	luahook::lua::lua_pushstring(L, "player_unit");
-	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetIgnored Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_rawgeti(L, -1, 1);
 	int player = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
 	luahook::lua::lua_pushinteger(L, player);
 	luahook::lua::lua_pushstring(L, "GenomeDataComponent");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetIgnored Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	int gdc = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentGetValue2");
 	luahook::lua::lua_pushinteger(L, gdc);
 	luahook::lua::lua_pushstring(L, "herd_id");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetIgnored Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	const char* herd_id = luahook::lua::lua_tolstring(L, -1, NULL);
 	if (strcmp(herd_id, "healer"))
 	{
@@ -562,7 +775,7 @@ int luahook::beefcake::GetIgnored(lua_State* L) {
 		return 1;
 	}
 	else {
-		return 0;
+		return luahook::lua::luaL_error(L, "Invalid Herd ID Gathered: ", herd_id);
 	}
 }
 
@@ -570,44 +783,50 @@ int luahook::beefcake::GetIgnored(lua_State* L) {
 int luahook::beefcake::MouseLeftDown(lua_State* L) {
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
 	luahook::lua::lua_pushstring(L, "player_unit");
-	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "MouseLeftDown Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_rawgeti(L, -1, 1);
 	int player = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
 	luahook::lua::lua_pushinteger(L, player);
 	luahook::lua::lua_pushstring(L, "ControlsComponent");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "MouseLeftDown Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	int concomp = luahook::lua::lua_tointeger(L, -1);
 	lua_pop(L, 3);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentGetValue2");
 	luahook::lua::lua_pushinteger(L, concomp);
 	luahook::lua::lua_pushstring(L, "mButtonDownFire2");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "MouseLeftDown Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	return 1;
 }
 
 int luahook::beefcake::MouseRightDown(lua_State* L) {
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
 	luahook::lua::lua_pushstring(L, "player_unit");
-	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "MouseRightDown Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_rawgeti(L, -1, 1);
 	int player = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
 	luahook::lua::lua_pushinteger(L, player);
 	luahook::lua::lua_pushstring(L, "ControlsComponent");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "MouseRightDown Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	int concomp = luahook::lua::lua_tointeger(L, -1);
 	lua_pop(L, 3);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentGetValue2");
 	luahook::lua::lua_pushinteger(L, concomp);
 	luahook::lua::lua_pushstring(L, "mButtonDownThrow");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "MouseRightDown Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	return 1;
 }
 
@@ -618,8 +837,9 @@ int luahook::beefcake::SetPlayerPos(lua_State* L) {
 	int y = luahook::lua::lua_tonumber(L, 2);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
 	luahook::lua::lua_pushstring(L, "player_unit");
-	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerPos Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_rawgeti(L, -1, 1);
 	int player = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntitySetTransform");
@@ -629,8 +849,38 @@ int luahook::beefcake::SetPlayerPos(lua_State* L) {
 	luahook::lua::lua_pushnumber(L, 0);
 	luahook::lua::lua_pushnumber(L, 1);
 	luahook::lua::lua_pushnumber(L, 1);
-	if (luahook::lua::lua_pcall(L, 6, 0, 0) != 0)
+	if (luahook::lua::lua_pcall(L, 6, 0, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerPos Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_settop(L, 0);
+	return 0;
+}
+
+int luahook::beefcake::SetPlayerStomachSize(lua_State* L) {
+	if (luahook::lua::lua_gettop(L) != 1)
 		return 0;
+	long int stomach = luahook::lua::lua_tonumber(L, 1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
+	luahook::lua::lua_pushstring(L, "player_unit");
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerStomachSize Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_rawgeti(L, -1, 1);
+	int player = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
+	luahook::lua::lua_pushinteger(L, player);
+	luahook::lua::lua_pushstring(L, "IngestionComponent");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerStomachSize Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	int ingestion = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
+	luahook::lua::lua_pushinteger(L, ingestion);
+	luahook::lua::lua_pushstring(L, "ingestion_capacity");
+	luahook::lua::lua_pushnumber(L, stomach);
+	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerStomachSize Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_settop(L, 0);
 	return 0;
 }
@@ -641,22 +891,25 @@ int luahook::beefcake::SetPlayerHealth(lua_State* L) {
 	double health = luahook::lua::lua_tonumber(L, 1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
 	luahook::lua::lua_pushstring(L, "player_unit");
-	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerHealth Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_rawgeti(L, -1, 1);
 	int player = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
 	luahook::lua::lua_pushinteger(L, player);
 	luahook::lua::lua_pushstring(L, "DamageModelComponent");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerHealth Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	int damage = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
 	luahook::lua::lua_pushinteger(L, damage);
 	luahook::lua::lua_pushstring(L, "hp");
 	luahook::lua::lua_pushnumber(L, health / 25);
-	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerHealth Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_settop(L, 0);
 	return 0;
 }
@@ -667,22 +920,83 @@ int luahook::beefcake::SetPlayerHealthM(lua_State* L) {
 	double health = luahook::lua::lua_tonumber(L, 1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
 	luahook::lua::lua_pushstring(L, "player_unit");
-	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerHealthMax Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_rawgeti(L, -1, 1);
 	int player = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
 	luahook::lua::lua_pushinteger(L, player);
 	luahook::lua::lua_pushstring(L, "DamageModelComponent");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerHealthMax Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	int damage = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
 	luahook::lua::lua_pushinteger(L, damage);
 	luahook::lua::lua_pushstring(L, "max_hp");
 	luahook::lua::lua_pushnumber(L, health / 25);
-	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0)
+	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerHealthMax Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_settop(L, 0);
+	return 0;
+}
+
+int luahook::beefcake::SetPlayerJetpack(lua_State* L) {
+	if (luahook::lua::lua_gettop(L) != 1)
 		return 0;
+	float fly = (float)luahook::lua::lua_tonumber(L, 1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
+	luahook::lua::lua_pushstring(L, "player_unit");
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerJetpack Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_rawgeti(L, -1, 1);
+	int player = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
+	luahook::lua::lua_pushinteger(L, player);
+	luahook::lua::lua_pushstring(L, "CharacterDataComponent");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerJetpack Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	int cdc = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
+	luahook::lua::lua_pushinteger(L, cdc);
+	luahook::lua::lua_pushstring(L, "fly_time_max");
+	luahook::lua::lua_pushnumber(L, fly);
+	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerJetpack Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_settop(L, 0);
+	return 0;
+}
+
+int luahook::beefcake::SetPlayerNeedsAir(lua_State* L) {
+	if (luahook::lua::lua_gettop(L) != 1)
+		return 0;
+	bool needed = luahook::lua::lua_toboolean(L, 1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
+	luahook::lua::lua_pushstring(L, "player_unit");
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerNeedsAir Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_rawgeti(L, -1, 1);
+	int player = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
+	luahook::lua::lua_pushinteger(L, player);
+	luahook::lua::lua_pushstring(L, "DamageModelComponent");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerNeedsAir Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	int damage = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
+	luahook::lua::lua_pushinteger(L, damage);
+	luahook::lua::lua_pushstring(L, "air_needed");
+	luahook::lua::lua_pushboolean(L, needed);
+	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerNeedsAir Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_settop(L, 0);
 	return 0;
 }
@@ -693,22 +1007,25 @@ int luahook::beefcake::SetPlayerGold(lua_State* L) {
 	int mon = (int)luahook::lua::lua_tonumber(L, 1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
 	luahook::lua::lua_pushstring(L, "player_unit");
-	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerGold Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_rawgeti(L, -1, 1);
 	int player = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
 	luahook::lua::lua_pushinteger(L, player);
 	luahook::lua::lua_pushstring(L, "WalletComponent");
-	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerGold Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	int wallet = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
 	luahook::lua::lua_pushinteger(L, wallet);
 	luahook::lua::lua_pushstring(L, "money");
 	luahook::lua::lua_pushinteger(L, mon);
-	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0)
-		return 0;
+	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerGold Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_settop(L, 0);
 	return 0;
 }
@@ -733,6 +1050,93 @@ int luahook::beefcake::SetIgnored(lua_State* L) {
 		luahook::lua::lua_pushstring(L, "player");
 	if (luahook::lua::lua_pcall(L, 2, 0, 0) != 0)
 		return 0;
+	luahook::lua::lua_settop(L, 0);
+	return 0;
+}
+
+int luahook::beefcake::SetPlayerAir(lua_State* L) {
+	if (luahook::lua::lua_gettop(L) != 1)
+		return 0;
+	float air = (float)luahook::lua::lua_tonumber(L, 1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
+	luahook::lua::lua_pushstring(L, "player_unit");
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerAir Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_rawgeti(L, -1, 1);
+	int player = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
+	luahook::lua::lua_pushinteger(L, player);
+	luahook::lua::lua_pushstring(L, "DamageModelComponent");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerAir Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	int damage = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
+	luahook::lua::lua_pushinteger(L, damage);
+	luahook::lua::lua_pushstring(L, "air_in_lungs");
+	luahook::lua::lua_pushnumber(L, air);
+	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerAir Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_settop(L, 0);
+	return 0;
+}
+
+int luahook::beefcake::SetPlayerAirM(lua_State* L) {
+	if (luahook::lua::lua_gettop(L) != 1)
+		return 0;
+	float air = (float)luahook::lua::lua_tonumber(L, 1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
+	luahook::lua::lua_pushstring(L, "player_unit");
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerAirM Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_rawgeti(L, -1, 1);
+	int player = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
+	luahook::lua::lua_pushinteger(L, player);
+	luahook::lua::lua_pushstring(L, "DamageModelComponent");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerAirM Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	int damage = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
+	luahook::lua::lua_pushinteger(L, damage);
+	luahook::lua::lua_pushstring(L, "air_in_lungs_max");
+	luahook::lua::lua_pushnumber(L, air);
+	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerAirM Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_settop(L, 0);
+	return 0;
+}
+
+int luahook::beefcake::SetPlayerClimb(lua_State* L) {
+	if (luahook::lua::lua_gettop(L) != 1)
+		return 0;
+	int climb = (float)luahook::lua::lua_tointeger(L, 1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
+	luahook::lua::lua_pushstring(L, "player_unit");
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerClimb Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_rawgeti(L, -1, 1);
+	int player = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
+	luahook::lua::lua_pushinteger(L, player);
+	luahook::lua::lua_pushstring(L, "CharacterDataComponent");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerClimb Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	int cdc = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
+	luahook::lua::lua_pushinteger(L, cdc);
+	luahook::lua::lua_pushstring(L, "climb_over_y");
+	luahook::lua::lua_pushnumber(L, climb);
+	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0) {
+		return luahook::lua::luaL_error(L, "SetPlayerClimb Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
 	luahook::lua::lua_settop(L, 0);
 	return 0;
 }
@@ -1121,6 +1525,32 @@ int luahook::beefcake::GetPlayerQInventory(lua_State* L)
 	return 1;
 }
 
+int luahook::beefcake::GetPlayerStomachSize(lua_State* L) {
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetWithTag");
+	luahook::lua::lua_pushstring(L, "player_unit");
+	if (luahook::lua::lua_pcall(L, 1, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerStomachSize Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	luahook::lua::lua_rawgeti(L, -1, 1);
+	int player = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
+	luahook::lua::lua_pushinteger(L, player);
+	luahook::lua::lua_pushstring(L, "IngestionComponent");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerStomachSize Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	int stomach = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentGetValue2");
+	luahook::lua::lua_pushinteger(L, stomach);
+	luahook::lua::lua_pushstring(L, "ingestion_capacity");
+	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0) {
+		return luahook::lua::luaL_error(L, "GetPlayerStomachSize Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+	}
+	long int size = (long int)luahook::lua::lua_tonumber(L, -1);
+	luahook::lua::lua_pushnumber(L, size);
+	return 1;
+}
+
 int luahook::beefcake::ReadMemory(lua_State* L) {
 	if (luahook::lua::lua_gettop(L) != 2)
 		return 0;
@@ -1237,19 +1667,8 @@ int luahook::beefcake::GetCFunctionPointer(lua_State* L)
 	return 1;
 }
 
-int puff = 0;
 void __fastcall luahook::noita::nlib_hook(lua_State* L)
 {
-	// is this our first time executing?
-	if (puff == 0)
-	{
-		// no longer our first time
-		puff = 1;
-		// store the lua_state
-		luahook::noita::first = L;
-		logh("First lua state found: ", luahook::noita::first);
-	}
-
 	// initiate input library
 	const struct luahook::lua::luaL_Reg InputFuncs[] = {
 		{"LeftMouseDown", luahook::beefcake::MouseLeftDown},
@@ -1263,15 +1682,28 @@ void __fastcall luahook::noita::nlib_hook(lua_State* L)
 			{"AddPerk", luahook::beefcake::AddPerk},
 			{"GetID", luahook::beefcake::GetPlayer},
 			{"GetIsIgnored", luahook::beefcake::GetIgnored},
+			{"GetAir", luahook::beefcake::GetPlayerAir},
+			{"GetMaxAir", luahook::beefcake::GetPlayerAirM},
+			{"GetClimbHeight", luahook::beefcake::GetPlayerClimb},
 			{"GetPosition", luahook::beefcake::GetPlayerPos},
 			{"GetHealth", luahook::beefcake::GetPlayerHealth},
 			{"GetMaxHealth", luahook::beefcake::GetPlayerHealthM},
 			{"GetGold", luahook::beefcake::GetPlayerGold},
+			{"GetJetpack", luahook::beefcake::GetPlayerJetpack},
+			{"GetJetpackRecharge", luahook::beefcake::GetPlayerJetpackRecharge},
+			{"GetNeedsAir", luahook::beefcake::GetPlayerNeedsAir},
 			{"GetInventory", luahook::beefcake::GetPlayerQInventory},
+			{"GetStomachSize", luahook::beefcake::GetPlayerStomachSize},
+			{"SetAir", luahook::beefcake::SetPlayerAir},
+			{"SetMaxAir", luahook::beefcake::SetPlayerAirM},
+			{"SetClimbHeight", luahook::beefcake::SetPlayerClimb},
 			{"SetPosition", luahook::beefcake::SetPlayerPos},
 			{"SetHealth", luahook::beefcake::SetPlayerHealth},
 			{"SetMaxHealth", luahook::beefcake::SetPlayerHealthM},
 			{"SetGold", luahook::beefcake::SetPlayerGold},
+			{"SetJetpack", luahook::beefcake::SetPlayerJetpack},
+			{"SetNeedsAir", luahook::beefcake::SetPlayerNeedsAir},
+			{"SetStomachSize", luahook::beefcake::SetPlayerStomachSize},
 			{"SetIsIgnored", luahook::beefcake::SetIgnored},
 			{NULL, NULL}
 	};
@@ -1309,6 +1741,9 @@ void __fastcall luahook::noita::nlib_hook(lua_State* L)
 	luahook::lua::luaopen_io(L);
 	luahook::lua::luaopen_jit(L);
 	luahook::lua::luaopen_os(L);
+
+
+	luahook::noita::first = L;
 
 	// return original functions (EntityLoad, etc..)
 	return luahook::noita::lib(L);
