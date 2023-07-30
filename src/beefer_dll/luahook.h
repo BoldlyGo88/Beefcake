@@ -11,6 +11,7 @@
 #define LUA_ERRSYNTAX	3
 #define LUA_ERRMEM	4
 #define LUA_ERRERR	5
+#define LUA_OK			0
 #define LUA_TNONE		(-1)
 #define LUA_TNIL		0
 #define LUA_TBOOLEAN		1
@@ -46,11 +47,13 @@ public:
 		typedef void(__cdecl* lua51_createtable)(lua_State* L, int narr, int nrec);
 		typedef int(__cdecl* luaL51_error)(lua_State* L, const char* fmt, ...);
 		typedef void(__cdecl* lua51_getfield)(lua_State* L, int idx, const char* k);
+		typedef int(__cdecl* lua51_getmetatable)(lua_State* L, int index);
 		typedef int(__cdecl* lua51_gettop)(lua_State* L);
 		typedef int(__cdecl* lua51_iscfunction)(lua_State* L, int idx);
 		typedef int(__cdecl* lua51_isnumber)(lua_State* L, int idx);
 		typedef int(__cdecl* lua51_isstring)(lua_State* L, int idx);
 		typedef void(__cdecl* luaL51_loadstring)(lua_State* L, const char* s);
+		typedef int(__cdecl* luaL51_newmetatable)(lua_State* L, const char* tname);
 		typedef lua_State*(__cdecl* luaL51_newstate)(void);
 		typedef lua_State*(__cdecl* lua51_newthread)(lua_State* L);
 		typedef int(__cdecl* lua51_next)(lua_State* L, int index);
@@ -68,6 +71,7 @@ public:
 		typedef void(__cdecl* luaL51_register)(lua_State* L, const char* libname, const luaL_Reg* l);
 		typedef int(__cdecl* lua51_resume)(lua_State* L, int narg);
 		typedef void(__cdecl* lua51_setfield)(lua_State* L, int idx, const char* k);
+		typedef void(__cdecl* lua51_setmetatable)(lua_State* L, int index);
 		typedef void(__cdecl* lua51_settable)(lua_State* L, int index);
 		typedef void(__cdecl* lua51_settop)(lua_State* L, int idx);
 		typedef int(__cdecl* lua51_toboolean)(lua_State* L, int idx);
@@ -93,11 +97,13 @@ public:
 		inline static uintptr_t createtable_a;
 		inline static uintptr_t error_a;
 		inline static uintptr_t getfield_a;
+		inline static uintptr_t getmetatable_a;
 		inline static uintptr_t gettop_a;
 		inline static uintptr_t iscfunction_a;
 		inline static uintptr_t isnumber_a;
 		inline static uintptr_t isstring_a;
 		inline static uintptr_t loadstring_a;
+		inline static uintptr_t newmetatable_a;
 		inline static uintptr_t newstate_a;
 		inline static uintptr_t newthread_a;
 		inline static uintptr_t next_a;
@@ -115,6 +121,7 @@ public:
 		inline static uintptr_t register_a;
 		inline static uintptr_t resume_a;
 		inline static uintptr_t setfield_a;
+		inline static uintptr_t setmetatable_a;
 		inline static uintptr_t settable_a;
 		inline static uintptr_t settop_a;
 		inline static uintptr_t toboolean_a;
@@ -139,11 +146,13 @@ public:
 		inline static lua51_createtable lua_createtable;
 		inline static luaL51_error luaL_error;
 		inline static lua51_getfield lua_getfield;
+		inline static lua51_getmetatable lua_getmetatable;
 		inline static lua51_gettop lua_gettop;
 		inline static lua51_iscfunction lua_iscfunction;
 		inline static lua51_isnumber lua_isnumber;
 		inline static lua51_isstring lua_isstring;
 		inline static luaL51_loadstring luaL_loadstring;
+		inline static luaL51_newmetatable lua_newmetatable;
 		inline static luaL51_newstate luaL_newstate;
 		inline static lua51_newthread lua_newthread;
 		inline static lua51_next lua_next;
@@ -161,6 +170,7 @@ public:
 		inline static luaL51_register luaL_register;
 		inline static lua51_resume lua_resume;
 		inline static lua51_setfield lua_setfield;
+		inline static lua51_setmetatable lua_setmetatable;
 		inline static lua51_settable lua_settable;
 		inline static lua51_settop lua_settop;
 		inline static lua51_toboolean lua_toboolean;
@@ -229,7 +239,6 @@ public:
 
 		// task library
 		static int ForceIsBetaBuild(lua_State* L);
-		static int ForceIsDevBuild(lua_State* L);
 		static int GetCFunctionPointer(lua_State* L);
 		static int GetState(lua_State* L);
 		static int ReadMemory(lua_State* L);
@@ -240,16 +249,30 @@ public:
 		static int AddPerk(lua_State* L);
 		static int GetIgnored(lua_State* L);
 		static int GetPlayer(lua_State* L);
+		static int GetPlayerAir(lua_State* L);
+		static int GetPlayerAirM(lua_State* L);
+		static int GetPlayerClimb(lua_State* L);
 		static int GetPlayerGold(lua_State* L);
 		static int GetPlayerHealth(lua_State* L);
 		static int GetPlayerHealthM(lua_State* L);
+		static int GetPlayerJetpack(lua_State* L);
+		static int GetPlayerJetpackRecharge(lua_State* L);
+		static int GetPlayerNeedsAir(lua_State* L);
 		static int GetPlayerPos(lua_State* L);
 		static int GetPlayerQInventory(lua_State* L);
+		static int GetPlayerStomachSize(lua_State* L);
 		static int SetIgnored(lua_State* L);
+		static int SetPlayerAir(lua_State* L);
+		static int SetPlayerAirM(lua_State* L);
+		static int SetPlayerClimb(lua_State* L);
 		static int SetPlayerGold(lua_State* L);
 		static int SetPlayerHealth(lua_State* L);
 		static int SetPlayerHealthM(lua_State* L);
+		static int SetPlayerJetpack(lua_State* L);
+		//static int SetPlayerJetpackRecharge(lua_State* L); will add eventually
+		static int SetPlayerNeedsAir(lua_State* L);
 		static int SetPlayerPos(lua_State* L);
+		static int SetPlayerStomachSize(lua_State* L);
 	};
 
 	// init for everything
