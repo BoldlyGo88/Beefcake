@@ -170,6 +170,8 @@ void luahook::luahook_init(){
 		{"mod_status_setter",0x2429DB},
 		{"noita_functions_library",0x31BF20},
 		{"should_shutdown_check",0x241C6A},
+		{"should_shutdown_check2",0x241CFD},
+		{"should_shutdown_check3",0x370DB4},
 		{"world_seed",0xBF5A48},
 	};
 
@@ -344,7 +346,7 @@ LOOP:
 	else {
 		logh("MAPITable found: ", address);
 		logh("IsModded variable found: ", address + d_addy["mod_api_is_modded_offset"]);
-		logh("Shutdown check found: ", luahook::noita::noitabase + d_addy["should_shutdown_check"]);
+		logh("Shutdown checks found: ", luahook::noita::noitabase + d_addy["should_shutdown_check"], luahook::noita::noitabase + d_addy["should_shutdown_check2"]);
 		logh("Changing mod status & avoiding new game shutdown..");
 		// once mods are enabled, mod status is set every frame
 		// we need to disable the every frame check, then change our status to 0 (unmodded)
@@ -354,6 +356,8 @@ LOOP:
 		// this feature could potentially cause unwanted crashes and save corruption due to memory leaks not being cleared
 		// it has potential to be removed in the future, i'll test a bit, or even maybe make it a setting that can be toggled on/off through the console
 		writeAOB(luahook::noita::noitabase + d_addy["should_shutdown_check"], to_array({ 0xEB, 0x06 }));
+		writeAOB(luahook::noita::noitabase + d_addy["should_shutdown_check2"], to_array({ 0xEB, 0x06 }));
+		writeAOB(luahook::noita::noitabase + d_addy["should_shutdown_check3"], to_array({ 0xEB, 0x08 }));
 		logh("Mod status set & shutdown cercumvented. Clearing in three.");
 		Sleep(3000);
 		system("cls");
@@ -366,7 +370,7 @@ int luahook::beefcake::GetPlayer(lua_State* L) {
 	luahook::lua::lua_pushstring(L, "player_unit");
 	if (luahook::lua::lua_pcall(L, 1, 1, 0) != LUA_OK)
 	{
-		return luahook::lua::luaL_error(L, "LocalPlayer.GetPlayer Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
+		return luahook::lua::luaL_error(L, "GetPlayer Error: %s", luahook::lua::lua_tolstring(L, -1, NULL));
 	}
 	luahook::lua::lua_rawgeti(L, -1, 1);
 	return 1;
@@ -1259,16 +1263,18 @@ int luahook::beefcake::AddSpellToWand(lua_State* L)
 
 int luahook::beefcake::CreateWand(lua_State* L)
 {
-	if (luahook::lua::lua_gettop(L) != 8)
+	if (luahook::lua::lua_gettop(L) != 10)
 		return 0;
 	const char* name = luahook::lua::lua_tolstring(L, 1, NULL);
-	const char* entity = luahook::lua::lua_tolstring(L, 2, NULL);
-	double mana_charge = luahook::lua::lua_tonumber(L, 3);
-	double mana_max = luahook::lua::lua_tonumber(L, 4);
-	double reloadspeed = luahook::lua::lua_tonumber(L, 5);
-	double recoil = luahook::lua::lua_tonumber(L, 6);
-	int actions_per_round = (int)luahook::lua::lua_tonumber(L, 7);
-	int capacity = (int)luahook::lua::lua_tonumber(L, 8);
+	double mana_charge = luahook::lua::lua_tonumber(L, 2);
+	double mana_max = luahook::lua::lua_tonumber(L, 3);
+	double reloadspeed = luahook::lua::lua_tonumber(L, 4);
+	double recoil = luahook::lua::lua_tonumber(L, 5);
+	int actions_per_round = (int)luahook::lua::lua_tonumber(L, 6);
+	int capacity = (int)luahook::lua::lua_tonumber(L, 7);
+	const char* entity = luahook::lua::lua_tolstring(L, 8, NULL);
+	int entity_offset_x = luahook::lua::lua_tointeger(L, 9);
+	int entity_offset_y = luahook::lua::lua_tointeger(L, 10);
 	if (mana_charge <= 0)
 		mana_charge = 100;
 	if (mana_max <= 0)
@@ -1300,14 +1306,40 @@ int luahook::beefcake::CreateWand(lua_State* L)
 	int ac = luahook::lua::lua_tointeger(L, -1);
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityGetFirstComponent");
 	luahook::lua::lua_pushinteger(L, wand);
-	luahook::lua::lua_pushstring(L, "HotspotComponent");
+	luahook::lua::lua_pushstring(L, "SpriteComponent");
 	if (luahook::lua::lua_pcall(L, 2, 1, 0) != 0)
 		return 0;
-	int hc = luahook::lua::lua_tointeger(L, -1);
+	int sc = luahook::lua::lua_tointeger(L, -1);
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityRemoveFromParent");
+	luahook::lua::lua_pushinteger(L, wand + 1);
+	if (luahook::lua::lua_pcall(L, 1, 0, 0) != 0)
+		return 0;
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "EntityRemoveFromParent");
+	luahook::lua::lua_pushinteger(L, wand + 2);
+	if (luahook::lua::lua_pcall(L, 1, 0, 0) != 0)
+		return 0;
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
 	luahook::lua::lua_pushinteger(L, ac);
-	luahook::lua::lua_pushstring(L, "entity_file");
+	luahook::lua::lua_pushstring(L, "sprite_file");
 	luahook::lua::lua_pushstring(L, entity);
+	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0)
+		return 0;
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
+	luahook::lua::lua_pushinteger(L, sc);
+	luahook::lua::lua_pushstring(L, "image_file");
+	luahook::lua::lua_pushstring(L, entity);
+	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0)
+		return 0;
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
+	luahook::lua::lua_pushinteger(L, sc);
+	luahook::lua::lua_pushstring(L, "offset_x");
+	luahook::lua::lua_pushinteger(L, entity_offset_y);
+	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0)
+		return 0;
+	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
+	luahook::lua::lua_pushinteger(L, sc);
+	luahook::lua::lua_pushstring(L, "offset_y");
+	luahook::lua::lua_pushinteger(L, entity_offset_x);
 	if (luahook::lua::lua_pcall(L, 3, 0, 0) != 0)
 		return 0;
 	luahook::lua::lua_getfield(L, LUA_GLOBALSINDEX, "ComponentSetValue2");
