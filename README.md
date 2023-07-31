@@ -77,9 +77,17 @@ Find out more information about the [MIT License](LICENSE.md)
 local wand = CreateWand("EXAMPLE_WAND", "data/items_gfx/wands/wand_0007.png", 250, 1000, 0.45, 0.2, 1, 3);
 AddSpellToWand(wand, "BLACK_HOLE", true);
 ```
-- CreateWand(name: string, wand_image_path: string, mana_charge: number, mana_max: number, reload_speed: number, recoil: number, spell_per_shot: int, capacity: int)
+- CreateWand(name: string, mana_charge: number, mana_max: number, reload_speed: number, recoil: number, spells_per_shot: int, capacity: int, wand_image: string, offset_x: int, offset_y: int)
 ```lua
-local wand = CreateWand("EXAMPLE_WAND", "data/items_gfx/wands/wand_0007.png", 250, 1000, 0.45, 0.2, 1, 3);
+function OnPlayerSpawned(player_entity)	
+	local x,y = EntityGetTransform(player_entity);
+	
+	local wand = CreateWand("TEST_WAND", 250, 1000, 0.45, 0.2, 1, 3, "data/items_gfx/wands/wand_0050.png", 8, 4);
+	AddSpellToWand(wand, "BLACK_HOLE", true);
+	AddSpellToWand(wand, "BOMB_HOLY", false);
+	EntitySetTransform(wand, x, y);
+	GamePrintImportant("WAND CREATED", tostring(wand));
+end;
 
 -- if mana_charge is zero or nil it defaults to 100
 -- if mana_max is zero or nil it defaults to 75
