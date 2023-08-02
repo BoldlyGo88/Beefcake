@@ -18,7 +18,7 @@ As of right now Beefcake has only been tested with the Steam version of Noita, i
 not work with other versions.
 - [Noita on Steam](https://store.steampowered.com/app/881100/Noita/)
 
-For the average users (people wanting to mod, or use mods) setting up Beefcake is pretty easy, and replaces no files.
+For the average users (people wanting to mod, or use mods) setting up Beefcake is pretty easy.
 
 1. Navigate to Noitas directory
 
@@ -28,28 +28,19 @@ For the average users (people wanting to mod, or use mods) setting up Beefcake i
 
 ![](https://github.com/WadeBA/Beefcake/blob/main/exampleimg/example2.png)
 
-3. Download and extract both Beefcake.exe (the loader) and beefer.dll (the main api) into the folder you created in step 2
-
+3. Download and extract both setup.bat and remove.bat and Beefcake+.dll (the main api) into the beefcake folder and then run the setup.bat
+   
 ![](https://github.com/WadeBA/Beefcake/blob/main/exampleimg/example3.png)
 
-4. Open Steam and navigate to Noitas properties
+4. Launch Noita & you should be greeted with the Beefcake Console
 
 ![](https://github.com/WadeBA/Beefcake/blob/main/exampleimg/example4.png)
 
-5. Under general and in the launch options box put (or whatever path corresponds to the location of Beefcake.exe and beefer.dll):
-```
-"C:\Program Files (x86)\Steam\steamapps\common\Noita\beefcake\Beefcake.exe" %command%
-```
+5. Start a new run/game and enjoy modding!
 
 ![](https://github.com/WadeBA/Beefcake/blob/main/exampleimg/example5.png)
 
-6. Run Noita from Steam, and once the console is open enter the path to Noita (one time thing)
-
-![](https://github.com/WadeBA/Beefcake/blob/main/exampleimg/example6.png)
-
-7. Enjoy modding!
-
-Once the console is open, you may notice it says "Waiting for MAPITable to initiate.." this is normal and will continue once a game is started!
+Lua can be executed through the console once the game starts.
 
 ## License
 
@@ -67,7 +58,6 @@ Find out more information about the [MIT License](LICENSE.md)
 
   - The developers of [Noita](https://store.steampowered.com/app/881100/Noita/), [Nolla Games](https://nollagames.com/)
   - The developer of [libmem](https://github.com/rdbo/libmem), [rdbo](https://github.com/rdbo)
-  - The developer of [color-console](https://github.com/aafulei/color-console), [aafulei](https://github.com/aafulei)
  
 ## Documentation
 
@@ -363,13 +353,4 @@ print(string.format("%x", task.GetCFunctionPointer(EntityLoad)));
 print(string.format("%x", task.GetState()));
 
 -- prints the memory address of current lua state
-```
-- task.ReadMemory(address: int, type: int)
-```lua
-local current_seed = task.ReadMemory(0x00FEE850, 0);
-local build_text = task.ReadMemory(0x00E1C3B8, 1);
-
--- current valid types:
--- 0 = int
--- 1 = string
 ```
