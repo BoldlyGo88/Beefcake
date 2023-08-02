@@ -1,0 +1,8 @@
+I thought it would be insanely redundant to add the entire Lua Jit source here, 
+so I included only the file that I modified (which was 3 lines)
+
+You can get the full Lua Jit source from the links below (which is needed to generate the lua51.lib file which is used by the .def file within the .dll source)
+
+https://luajit.org/download.html
+https://luajit.org/download/LuaJIT-2.0.5.zip
+
