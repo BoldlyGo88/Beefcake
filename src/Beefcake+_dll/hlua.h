@@ -37,6 +37,8 @@
 #define pop(L,n)		settop(L, -(n)-1)
 #define newtable(L)		createtable(L, 0, 0)
 
+
+
 typedef struct lua_State lua_State;
 typedef int(__cdecl* lua_CFunction)(lua_State* L);
 typedef struct luaL_Reg { const char* name; lua_CFunction func; } luaL_Reg;
@@ -142,7 +144,7 @@ enum lua_offsets {
 	e_getfield = 0x6C90,
 	e_getmetatable = 0x6D40,		// unused, not initialized
 	e_gettop = 0x6E20,
-	e_iscfunction = 0x6F00,			// unused, not initialized
+	e_iscfunction = 0x6F00,
 	e_isnumber = 0x6F30,
 	e_isstring = 0x6F80,
 	e_loadstring = 0x29C20,			// unused-ish

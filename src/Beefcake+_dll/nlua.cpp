@@ -4,13 +4,33 @@
 
 uintptr_t noita_base = 0x00400000;
 lua_State* state = NULL;
+lua_State* unsafeState = NULL;
 nlib lib = NULL;
+
+// noitas restricted modding functions
+nModDevGenerateSpriteUVsForDirectory ModDevGenerateSpriteUVsForDirectory = NULL;
+nModLuaFileAppend ModLuaFileAppend = NULL;
+nModMagicNumbersFileAdd ModMagicNumbersFileAdd = NULL;
+nModMaterialsFileAdd ModMaterialsFileAdd = NULL;
+nModRegisterAudioEventMappings ModRegisterAudioEventMappings = NULL;
+nModTextFileGetContent ModTextFileGetContent = NULL;
+nModTextFileWhoSetContent ModTextFileWhoSetContent = NULL;
+nModTextSetFileContent ModTextSetFileContent = NULL;
 
 // defining these up here to avoid errors & qol, all the code is at the bottom
 void writeINT(uintptr_t address, int value);
 mem::uintptr_t readPTR(uintptr_t address);
 
 void nlua_init() {
+	ModDevGenerateSpriteUVsForDirectory = (nModDevGenerateSpriteUVsForDirectory)(noita_base + nlua_offsets::moddevspriteuv);
+	ModLuaFileAppend = (nModLuaFileAppend)(noita_base + nlua_offsets::modluafileappend);
+	ModMagicNumbersFileAdd = (nModMagicNumbersFileAdd)(noita_base + nlua_offsets::modmagicnumbers);
+	ModMaterialsFileAdd = (nModMaterialsFileAdd)(noita_base + nlua_offsets::modmaterials);
+	ModRegisterAudioEventMappings = (nModRegisterAudioEventMappings)(noita_base + nlua_offsets::modregisteraudio);
+	ModTextFileGetContent = (nModTextFileGetContent)(noita_base + nlua_offsets::modtextfilegetcontent);
+	ModTextFileWhoSetContent = (nModTextFileWhoSetContent)(noita_base + nlua_offsets::modtextfilewhosetcontent);
+	ModTextSetFileContent = (nModTextSetFileContent)(noita_base + nlua_offsets::modtextsetfilecontent);
+
 	lib = (nlib)(noita_base + nlua_offsets::function_library);
 	lib = (nlib)mem::in::detour_trampoline((mem::voidptr_t)lib, (mem::voidptr_t)nlib_hook, 9, mem::MEM_DT_M1);
 	int p = 0;
@@ -28,7 +48,7 @@ LOOP:
 	else {
 		std::cout << "IsModded found: " << std::hex << address << std::endl;
 		std::cout << "Changing mod status.." << std::endl;
-		writeINT(noita_base + nlua_offsets::mod_set_ismodding, 786960875);
+		//writeINT(noita_base + nlua_offsets::mod_set_ismodding, 786960875);
 		writeINT(address + nlua_offsets::mod_ismodding, 0);
 		Sleep(1000);
 		system("cls");
@@ -94,6 +114,16 @@ void __fastcall nlib_hook(lua_State* L) {
 	lregister(L, "LocalPlayer", LocalPlayerFuncs);
 	lregister(L, "task", taskfuncs);
 
+	// Lets unrestrict the noita modding functions
+	nregister(L, "ModDevGenerateSpriteUVsForDirectory", (lua_CFunction)ModDevGenerateSpriteUVsForDirectory);
+	nregister(L, "ModLuaFileAppend", (lua_CFunction)ModLuaFileAppend);
+	nregister(L, "ModMagicNumbersFileAdd", (lua_CFunction)ModMagicNumbersFileAdd);
+	nregister(L, "ModMaterialsFileAdd", (lua_CFunction)ModMaterialsFileAdd);
+	nregister(L, "ModRegisterAudioEventMappings", (lua_CFunction)ModRegisterAudioEventMappings);
+	nregister(L, "ModTextFileGetContent", (lua_CFunction)ModTextFileGetContent);
+	nregister(L, "ModTextFileWhoSetContent", (lua_CFunction)ModTextFileWhoSetContent);
+	nregister(L, "ModTextSetFileContent", (lua_CFunction)ModTextSetFileContent);
+
 	// Register our globals
 	nregister(L, "AddSpellToWand", AddSpellToWand);
 	nregister(L, "CreateWand", CreateWand);
@@ -115,7 +145,11 @@ void __fastcall nlib_hook(lua_State* L) {
 	luaopen_jit(L);
 	luaopen_os(L);
 
-	state = L;
+	if (state == NULL) {
+		state = L;
+		unsafeState = state;
+	}
+
 	return lib(L);
 }
 
