@@ -61,6 +61,22 @@ Find out more information about the [MIT License](LICENSE.md)
  
 ## Documentation
 
+#### Noitas Modding API Unrestricted
+This is referring to:
+- ModDevGenerateSpriteUVsForDirectory
+- ModLuaFileAppend
+- ModMagicNumbersFileAdd
+- ModMaterialsFileAdd
+- ModRegisterAudioEventMappings
+- ModTextFileGetContent
+- ModTextFileSetContent
+- ModTextFileWhoSetContent
+
+Which are normally restricted to being used only at mod initiation, now they can be used whenever.
+This is mostly untested, the effects of using these whenever is unknown and they could not work at all or crash the game.
+
+I've only tested ModTextFileSetContent, which is used to make task.ExecuteTL() work.
+
 #### Beefcake Globals
 - AddSpellToWand(wand_entity: int, spell_id: string, is_always_cast: boolean)
 ```lua
@@ -87,13 +103,6 @@ end;
 local rightarm = EntityGetChild(LocalPlayer.GetID(), "arm_r");
 
 -- returns the components id
-```
-- ExecuteThroughLoader(script: string)
-```lua
-ExecuteThroughLoader("local x,y = LocalPlayer.GetPosition(); EntityLoad('data/entities/flute.xml',x,y);");
-
--- its recommended this function is used ONLY in the Beefcake Console, it executes code through a LuaComponent avoiding many visual and memory bugs.
--- using it in mod files may have unwanted side effects
 ```
 - ForceSeed(seed: int)
 ```lua
@@ -334,6 +343,12 @@ LocalPlayer.SetStomachSize(100000)
 ```
 
 #### Task Library
+- ExecuteTL(script: string)
+```lua
+--[[ its recommended this function is used ONLY in the Beefcake Console, it executes code through a LuaComponent avoiding a crash when using certain functions within the Beefcake Console. Using it in mod files may have unwanted side effects ]]--
+
+task.ExecuteTL("local x,y = LocalPlayer.GetPosition(); EntityLoad('data/entities/flute.xml',x,y);");
+```
 - task.ForceIBB(status: boolean)
 ```lua
 task.ForceIBB(true);
