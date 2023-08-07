@@ -48,7 +48,7 @@ LOOP:
 	else {
 		std::cout << "IsModded found: " << std::hex << address << std::endl;
 		std::cout << "Changing mod status.." << std::endl;
-		//writeINT(noita_base + nlua_offsets::mod_set_ismodding, 786960875);
+		writeINT(noita_base + nlua_offsets::mod_set_ismodding, 786960875);
 		writeINT(address + nlua_offsets::mod_ismodding, 0);
 		Sleep(1000);
 		system("cls");
@@ -61,89 +61,97 @@ LOOP:
 
 void __fastcall nlib_hook(lua_State* L) {
 
-	// Initiate input library
-	const struct luaL_Reg InputFuncs[] = {
-		{"LeftMouseDown", MouseLeftDown},
-		{"RightMouseDown", MouseRightDown},
-		{NULL, NULL}
-	};
-
-	// Initiate LocalPlayer library
-	const struct luaL_Reg LocalPlayerFuncs[] = {
-			{"AddPerk", AddPerk},
-			{"GetID", GetPlayer},
-			{"GetIsIgnored", GetIgnored},
-			{"GetAir", GetPlayerAir},
-			{"GetMaxAir", GetPlayerAirM},
-			{"GetClimbHeight", GetPlayerClimb},
-			{"GetPosition", GetPlayerPos},
-			{"GetHealth", GetPlayerHealth},
-			{"GetMaxHealth", GetPlayerHealthM},
-			{"GetGold", GetPlayerGold},
-			{"GetJetpack", GetPlayerJetpack},
-			{"GetJetpackRecharge", GetPlayerJetpackRecharge},
-			{"GetNeedsAir", GetPlayerNeedsAir},
-			{"GetInventory", GetPlayerQInventory},
-			{"GetStomachSize", GetPlayerStomachSize},
-			{"SetAir", SetPlayerAir},
-			{"SetMaxAir", SetPlayerAirM},
-			{"SetClimbHeight", SetPlayerClimb},
-			{"SetPosition", SetPlayerPos},
-			{"SetHealth", SetPlayerHealth},
-			{"SetMaxHealth", SetPlayerHealthM},
-			{"SetGold", SetPlayerGold},
-			{"SetJetpack", SetPlayerJetpack},
-			{"SetNeedsAir", SetPlayerNeedsAir},
-			{"SetStomachSize", SetPlayerStomachSize},
-			{"SetIsIgnored", SetIgnored},
+	getglobal(L, "inf");
+	if (type(L, -1) == LUA_TNIL)
+	{
+		// Initiate input library
+		const struct luaL_Reg InputFuncs[] = {
+			{"KeyDown", KeyDown},
+			{"LeftMouseDown", MouseLeftDown},
+			{"RightMouseDown", MouseRightDown},
 			{NULL, NULL}
-	};
+		};
 
-	// Initiate task library
-	const struct luaL_Reg taskfuncs[] = {
-			{"ExecuteTL", ExecuteThroughLoader},
-			{"ForceIBB", ForceIsBetaBuild},
-			{"GetCFunctionPointer", GetCFunctionPointer},
-			{"GetState", GetState},
-			//{"ReadMemory", ReadMemory}, may or not may reimplement this
-			{NULL, NULL}
-	};
+		// Initiate LocalPlayer library
+		const struct luaL_Reg LocalPlayerFuncs[] = {
+				{"AddPerk", AddPerk},
+				{"GetID", GetPlayer},
+				{"GetIsIgnored", GetIgnored},
+				{"GetAir", GetPlayerAir},
+				{"GetMaxAir", GetPlayerAirM},
+				{"GetClimbHeight", GetPlayerClimb},
+				{"GetPosition", GetPlayerPos},
+				{"GetHealth", GetPlayerHealth},
+				{"GetMaxHealth", GetPlayerHealthM},
+				{"GetGold", GetPlayerGold},
+				{"GetSpentGold", GetPlayerGoldSpent},
+				{"GetJetpack", GetPlayerJetpack},
+				{"GetJetpackRecharge", GetPlayerJetpackRecharge},
+				{"GetNeedsAir", GetPlayerNeedsAir},
+				{"GetInventory", GetPlayerQInventory},
+				{"GetStomachFullness", GetPlayerStomachFullness},
+				{"GetStomachSize", GetPlayerStomachSize},
+				{"SetAir", SetPlayerAir},
+				{"SetMaxAir", SetPlayerAirM},
+				{"SetClimbHeight", SetPlayerClimb},
+				{"SetPosition", SetPlayerPos},
+				{"SetHealth", SetPlayerHealth},
+				{"SetMaxHealth", SetPlayerHealthM},
+				{"SetGold", SetPlayerGold},
+				{"SetJetpack", SetPlayerJetpack},
+				{"SetNeedsAir", SetPlayerNeedsAir},
+				{"SetStomachFullness", SetPlayerStomachFullness},
+				{"SetStomachSize", SetPlayerStomachSize},
+				{"SetIsIgnored", SetIgnored},
+				{NULL, NULL}
+		};
 
-	// Register the libraries
-	lregister(L, "input", InputFuncs);
-	lregister(L, "LocalPlayer", LocalPlayerFuncs);
-	lregister(L, "task", taskfuncs);
+		// Initiate task library
+		const struct luaL_Reg taskfuncs[] = {
+				{"ExecuteTL", ExecuteThroughLoader},
+				{"ForceIBB", ForceIsBetaBuild},
+				{"GetCFunctionPointer", GetCFunctionPointer},
+				{"GetState", GetState},
+				//{"ReadMemory", ReadMemory}, may or not may reimplement this
+				{NULL, NULL}
+		};
 
-	// Lets unrestrict the noita modding functions
-	nregister(L, "ModDevGenerateSpriteUVsForDirectory", (lua_CFunction)ModDevGenerateSpriteUVsForDirectory);
-	nregister(L, "ModLuaFileAppend", (lua_CFunction)ModLuaFileAppend);
-	nregister(L, "ModMagicNumbersFileAdd", (lua_CFunction)ModMagicNumbersFileAdd);
-	nregister(L, "ModMaterialsFileAdd", (lua_CFunction)ModMaterialsFileAdd);
-	nregister(L, "ModRegisterAudioEventMappings", (lua_CFunction)ModRegisterAudioEventMappings);
-	nregister(L, "ModTextFileGetContent", (lua_CFunction)ModTextFileGetContent);
-	nregister(L, "ModTextFileWhoSetContent", (lua_CFunction)ModTextFileWhoSetContent);
-	nregister(L, "ModTextSetFileContent", (lua_CFunction)ModTextSetFileContent);
+		// Register the libraries
+		lregister(L, "input", InputFuncs);
+		lregister(L, "LocalPlayer", LocalPlayerFuncs);
+		lregister(L, "task", taskfuncs);
 
-	// Register our globals
-	nregister(L, "AddSpellToWand", AddSpellToWand);
-	nregister(L, "CreateWand", CreateWand);
-	nregister(L, "EntityGetChild", EntityGetChild);
-	nregister(L, "ForceSeed", ForceSeed);
-	nregister(L, "GenomeGetHerdId", GenomeGetHerdId);
-	nregister(L, "print", Print);
-	nregister(L, "SetWorldTime", SetWorldTime);
-	nregister(L, "SpawnFlask", SpawnFlask);
-	nregister(L, "SpawnPerk", SpawnPerk);
-	nregister(L, "SpawnSpell", SpawnSpell);
+		// Lets unrestrict the noita modding functions
+		nregister(L, "ModDevGenerateSpriteUVsForDirectory", (lua_CFunction)ModDevGenerateSpriteUVsForDirectory);
+		nregister(L, "ModLuaFileAppend", (lua_CFunction)ModLuaFileAppend);
+		nregister(L, "ModMagicNumbersFileAdd", (lua_CFunction)ModMagicNumbersFileAdd);
+		nregister(L, "ModMaterialsFileAdd", (lua_CFunction)ModMaterialsFileAdd);
+		nregister(L, "ModRegisterAudioEventMappings", (lua_CFunction)ModRegisterAudioEventMappings);
+		nregister(L, "ModTextFileGetContent", (lua_CFunction)ModTextFileGetContent);
+		nregister(L, "ModTextFileWhoSetContent", (lua_CFunction)ModTextFileWhoSetContent);
+		nregister(L, "ModTextSetFileContent", (lua_CFunction)ModTextSetFileContent);
 
-	vregister(L, pushnumber, "inf", 2147483647);
-	
-	luaopen_bit(L);
-	luaopen_debug(L);
-	luaopen_ffi(L);
-	luaopen_io(L);
-	luaopen_jit(L);
-	luaopen_os(L);
+		// Register our globals
+		nregister(L, "AddSpellToWand", AddSpellToWand);
+		nregister(L, "CreateWand", CreateWand);
+		nregister(L, "EntityGetChild", EntityGetChild);
+		nregister(L, "ForceSeed", ForceSeed);
+		nregister(L, "GenomeGetHerdId", GenomeGetHerdId);
+		nregister(L, "print", Print);
+		nregister(L, "SetWorldTime", SetWorldTime);
+		nregister(L, "SpawnFlask", SpawnFlask);
+		nregister(L, "SpawnPerk", SpawnPerk);
+		nregister(L, "SpawnSpell", SpawnSpell);
+
+		vregister(L, pushnumber, "inf", 2147483647);
+
+		luaopen_bit(L);
+		luaopen_debug(L);
+		luaopen_ffi(L);
+		luaopen_io(L);
+		luaopen_jit(L);
+		luaopen_os(L);
+	}
 
 	if (state == NULL) {
 		state = L;
