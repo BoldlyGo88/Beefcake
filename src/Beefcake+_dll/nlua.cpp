@@ -61,7 +61,7 @@ LOOP:
 
 void __fastcall nlib_hook(lua_State* L) {
 
-	getglobal(L, "inf");
+	getglobal(L, "rfd");
 	if (type(L, -1) == LUA_TNIL)
 	{
 		// Initiate input library
@@ -75,7 +75,7 @@ void __fastcall nlib_hook(lua_State* L) {
 		// Initiate LocalPlayer library
 		const struct luaL_Reg LocalPlayerFuncs[] = {
 				{"AddPerk", AddPerk},
-				{"GetID", GetPlayer},
+				{"GetId", GetPlayer},
 				{"GetIsIgnored", GetIgnored},
 				{"GetAir", GetPlayerAir},
 				{"GetMaxAir", GetPlayerAirM},
@@ -134,6 +134,7 @@ void __fastcall nlib_hook(lua_State* L) {
 		// Register our globals
 		nregister(L, "AddSpellToWand", AddSpellToWand);
 		nregister(L, "CreateWand", CreateWand);
+		nregister(L, "EditWand", EditWand);
 		nregister(L, "EntityGetChild", EntityGetChild);
 		nregister(L, "ForceSeed", ForceSeed);
 		nregister(L, "GenomeGetHerdId", GenomeGetHerdId);
@@ -143,7 +144,9 @@ void __fastcall nlib_hook(lua_State* L) {
 		nregister(L, "SpawnPerk", SpawnPerk);
 		nregister(L, "SpawnSpell", SpawnSpell);
 
+		vregister(L, pushnumber, "cdd", 0.0165f);
 		vregister(L, pushnumber, "inf", 2147483647);
+		vregister(L, pushnumber, "rfd", 0.0167f);
 
 		luaopen_bit(L);
 		luaopen_debug(L);

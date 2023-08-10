@@ -3,6 +3,27 @@
 #include <string>
 #include <iostream>
 
+std::map<std::string, int> wand_ac = {
+	{"mana_max", LUA_TNUMBER},
+	{"mana_charge_speed", LUA_TNUMBER},
+	{"reload_time_frames", LUA_TNUMBER},
+	{"item_recoil_max", LUA_TNUMBER},
+	{"cast_delay", LUA_TNUMBER}
+};
+
+std::map<std::string, int> wand_gc = {
+	{"actions_per_round", LUA_TNUMBER},
+	{"reload_time", LUA_TNUMBER},
+	{"deck_capacity", LUA_TNUMBER},
+};
+
+std::map<std::string, int> wand_sc = {
+	{"ui_name", LUA_TSTRING},
+	{"sprite", LUA_TSTRING},
+	{"offset_x", LUA_TNUMBER},
+	{"offset_y", LUA_TNUMBER}
+};
+
 // Globals
 int AddSpellToWand(lua_State* L) {
 	if (gettop(L) != 3 || type(L, 1) != LUA_TNUMBER && type(L, 2) != LUA_TSTRING && type(L, 3) != LUA_TNUMBER)
@@ -96,25 +117,11 @@ int CreateWand(lua_State* L) {
 		return 0;
 	}
 
-	if (gettop(L) != 10 || type(L, 1) != LUA_TSTRING && type(L, 2) != LUA_TNUMBER && type(L, 3) != LUA_TNUMBER && type(L, 4) != LUA_TNUMBER
-		&& type(L, 5) != LUA_TNUMBER && type(L, 6) != LUA_TNUMBER && type(L, 7) != LUA_TNUMBER && type(L, 8) != LUA_TSTRING
-		&& type(L, 9) != LUA_TNUMBER && type(L, 10) != LUA_TNUMBER)
+	if (gettop(L) != 3 || type(L, 1) != LUA_TTABLE && type(L, 2) != LUA_TTABLE && type(L,3) != LUA_TTABLE)
+	{
 		return error(L, "Argument Error: %s", tolstring(L, -1, NULL));
+	}
 
-	const char* name = tolstring(L, 1, NULL);
-	double mana_charge = tonumber(L, 2);
-	double mana_max = tonumber(L, 3);
-	double reloadspeed = tonumber(L, 4);
-	double recoil = tonumber(L, 5);
-	int actions_per_round = (int)tonumber(L, 6);
-	int capacity = (int)tonumber(L, 7);
-	const char* entity = tolstring(L, 8, NULL);
-	int entity_offset_x = tointeger(L, 9);
-	int entity_offset_y = tointeger(L, 10);
-	if (mana_charge <= 0)
-		mana_charge = 100;
-	if (mana_max <= 0)
-		mana_max = 75;
 	getglobal(L, "EntityGetWithTag");
 	pushstring(L, "player_unit");
 	if (pcall(L, 1, 1, 0) != 0)
@@ -158,90 +165,247 @@ int CreateWand(lua_State* L) {
 	pushinteger(L, wand + 2);
 	if (pcall(L, 1, 0, 0) != 0)
 		return error(L, "EntityRemoveFromParent Error: %s", tolstring(L, -1, NULL));
-	getglobal(L, "ComponentSetValue2");
-	pushinteger(L, ac);
-	pushstring(L, "sprite_file");
-	pushstring(L, entity);
-	if (pcall(L, 3, 0, 0) != 0)
-		return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
-	getglobal(L, "ComponentSetValue2");
-	pushinteger(L, sc);
-	pushstring(L, "image_file");
-	pushstring(L, entity);
-	if (pcall(L, 3, 0, 0) != 0)
-		return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
-	getglobal(L, "ComponentSetValue2");
-	pushinteger(L, sc);
-	pushstring(L, "offset_x");
-	pushinteger(L, entity_offset_y);
-	if (pcall(L, 3, 0, 0) != 0)
-		return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
-	getglobal(L, "ComponentSetValue2");
-	pushinteger(L, sc);
-	pushstring(L, "offset_y");
-	pushinteger(L, entity_offset_x);
-	if (pcall(L, 3, 0, 0) != 0)
-		return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
-	getglobal(L, "ComponentSetValue2");
-	pushinteger(L, ac);
-	pushstring(L, "mana_charge_speed");
-	pushnumber(L, mana_charge);
-	if (pcall(L, 3, 0, 0) != 0)
-		return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
-	getglobal(L, "ComponentSetValue2");
-	pushinteger(L, ac);
-	pushstring(L, "mana_max");
-	pushnumber(L, mana_max);
-	if (pcall(L, 3, 0, 0) != 0)
-		return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
-	getglobal(L, "ComponentSetValue2");
-	pushinteger(L, ac);
-	pushstring(L, "reload_time_frames");
-	pushnumber(L, reloadspeed);
-	if (pcall(L, 3, 0, 0) != 0)
-		return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
-	getglobal(L, "ComponentSetValue2");
-	pushinteger(L, ac);
-	pushstring(L, "item_recoil_max");
-	pushnumber(L, recoil);
-	if (pcall(L, 3, 0, 0) != 0)
-		return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
-	getglobal(L, "ComponentSetValue2");
-	pushinteger(L, ac);
-	pushstring(L, "ui_name");
-	pushstring(L, name);
-	if (pcall(L, 3, 0, 0) != 0)
-		return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
-	getglobal(L, "ComponentObjectSetValue2");
-	pushinteger(L, ac);
-	pushstring(L, "gun_config");
-	pushstring(L, "actions_per_round");
-	pushinteger(L, actions_per_round);
-	if (pcall(L, 4, 0, 0) != 0)
-		return error(L, "ComponentObjectSetValue2 Error: %s", tolstring(L, -1, NULL));
-	getglobal(L, "ComponentObjectSetValue2");
-	pushinteger(L, ac);
-	pushstring(L, "gun_config");
-	pushstring(L, "reload_time");
-	pushnumber(L, reloadspeed);
-	if (pcall(L, 4, 0, 0) != 0)
-		return error(L, "ComponentObjectSetValue2 Error: %s", tolstring(L, -1, NULL));
-	getglobal(L, "ComponentObjectSetValue2");
-	pushinteger(L, ac);
-	pushstring(L, "gun_config");
-	pushstring(L, "deck_capacity");
-	pushinteger(L, capacity);
-	if (pcall(L, 4, 0, 0) != 0)
-		return error(L, "ComponentObjectSetValue2 Error: %s", tolstring(L, -1, NULL));
-	getglobal(L, "ComponentObjectSetValue2");
-	pushinteger(L, ac);
-	pushstring(L, "gun_config");
-	pushstring(L, "fire_rate_wait");
-	pushinteger(L, reloadspeed);
-	if (pcall(L, 4, 0, 0) != 0)
-		return error(L, "ComponentObjectSetValue2 Error: %s", tolstring(L, -1, NULL));
+
+	for (const auto& actions : wand_ac) {
+		const std::string& acv = actions.first;
+		int lt = actions.second;
+
+		getfield(L, 1, acv.c_str());
+		if (type(L, -1) != LUA_TNIL && type(L, -1) == lt)
+		{
+			if (lt == LUA_TNUMBER)
+			{
+				if (acv == "cast_delay")
+				{
+					double num = tonumber(L, -1);
+					getglobal(L, "ComponentObjectSetValue2");
+					pushinteger(L, ac);
+					pushstring(L, "gunaction_config");
+					pushstring(L, "fire_rate_wait");
+					pushnumber(L, num);
+					if (pcall(L, 4, 0, 0) != 0)
+						return error(L, "ComponentObjectSetValue2 Error: %s", tolstring(L, -1, NULL));
+				}
+				else {
+					double num = tonumber(L, -1);
+					getglobal(L, "ComponentSetValue2");
+					pushinteger(L, ac);
+					pushstring(L, acv.c_str());
+					pushnumber(L, num);
+					if (pcall(L, 3, 0, 0) != 0)
+						return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
+				}
+			}
+		}
+		pop(L, 1);
+	}
+
+	for (const auto& config : wand_gc) {
+		const std::string& gcv = config.first;
+		int lt = config.second;
+
+		getfield(L, 2, gcv.c_str());
+		if (type(L, -1) != LUA_TNIL && type(L, -1) == lt)
+		{
+			if (lt == LUA_TNUMBER)
+			{
+				double num = (gcv.c_str() == "reload_time") ? tonumber(L, -1) : (int)tonumber(L, -1);
+				getglobal(L, "ComponentObjectSetValue2");
+				pushinteger(L, ac);
+				pushstring(L, "gun_config");
+				pushstring(L, gcv.c_str());
+				pushnumber(L, num);
+				if (pcall(L, 4, 0, 0) != 0)
+					return error(L, "ComponentObjectSetValue2 Error: %s", tolstring(L, -1, NULL));
+			}
+		}
+		pop(L, 1);
+	}
+
+	for (const auto& sprite : wand_sc) {
+		const std::string& scv = sprite.first;
+		int lt = sprite.second;
+
+		getfield(L, 3, scv.c_str());
+		if (type(L, -1) != LUA_TNIL && type(L, -1) == lt)
+		{
+			if (lt == LUA_TSTRING)
+			{
+				if (scv == "sprite") {
+					const char* spr = tolstring(L, -1, NULL);
+					getglobal(L, "ComponentSetValue2");
+					pushinteger(L, ac);
+					pushstring(L, "sprite_file");
+					pushstring(L, spr);
+					if (pcall(L, 3, 0, 0) != 0)
+						return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
+					getglobal(L, "ComponentSetValue2");
+					pushinteger(L, sc);
+					pushstring(L, "image_file");
+					pushstring(L, spr);
+					if (pcall(L, 3, 0, 0) != 0)
+						return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
+				}
+
+				if (scv == "ui_name") {
+					const char* name = tolstring(L, -1, NULL);
+					getglobal(L, "ComponentSetValue2");
+					pushinteger(L, ac);
+					pushstring(L, "ui_name");
+					pushstring(L, name);
+					if (pcall(L, 3, 0, 0) != 0)
+						return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
+				}
+			}
+			else if (lt == LUA_TNUMBER) {
+				int offset = tointeger(L, -1);
+				getglobal(L, "ComponentSetValue2");
+				pushinteger(L, sc);
+				pushstring(L, scv.c_str());
+				pushinteger(L, offset);
+				if (pcall(L, 3, 0, 0) != 0)
+					return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
+			}
+		}
+		pop(L, 1);
+	}
+
 	pushinteger(L, wand);
 	return 1;
+}
+
+int EditWand(lua_State* L) {
+	if (unsafeState == L) {
+		std::cout << "\x1B[31m" << "This function is restricted from being executed through the Beefcake Console. Use task.ExecuteTL() to get around this." << "\033[0m" << std::endl;
+		return 0;
+	}
+
+	if (gettop(L) != 4 || type(L, 1) == LUA_TNUMBER && type(L, 2) != LUA_TTABLE && type(L, 3) != LUA_TTABLE && type(L, 4) != LUA_TTABLE)
+	{
+		return error(L, "Argument Error: %s", tolstring(L, -1, NULL));
+	}
+
+	int wand = tointeger(L, 1);
+	getglobal(L, "EntityGetFirstComponent");
+	pushinteger(L, wand);
+	pushstring(L, "AbilityComponent");
+	if (pcall(L, 2, 1, 0) != 0)
+		return error(L, "EntityGetFirstComponent Error: %s", tolstring(L, -1, NULL));
+	int ac = tointeger(L, -1);
+	pop(L, 1);
+	getglobal(L, "EntityGetFirstComponent");
+	pushinteger(L, wand);
+	pushstring(L, "SpriteComponent");
+	if (pcall(L, 2, 1, 0) != 0)
+		return error(L, "EntityGetFirstComponent Error: %s", tolstring(L, -1, NULL));
+	int sc = tointeger(L, -1);
+	pop(L, 1);
+
+	for (const auto& actions : wand_ac) {
+		const std::string& acv = actions.first;
+		int lt = actions.second;
+
+		getfield(L, 2, acv.c_str());
+		if (type(L, -1) != LUA_TNIL && type(L, -1) == lt)
+		{
+			if (lt == LUA_TNUMBER)
+			{
+				if (acv == "cast_delay")
+				{
+					double num = tonumber(L, -1);
+					getglobal(L, "ComponentObjectSetValue2");
+					pushinteger(L, ac);
+					pushstring(L, "gunaction_config");
+					pushstring(L, "fire_rate_wait");
+					pushnumber(L, num);
+					if (pcall(L, 4, 0, 0) != 0)
+						return error(L, "ComponentObjectSetValue2 Error: %s", tolstring(L, -1, NULL));
+				}
+				else {
+					double num = tonumber(L, -1);
+					getglobal(L, "ComponentSetValue2");
+					pushinteger(L, ac);
+					pushstring(L, acv.c_str());
+					pushnumber(L, num);
+					if (pcall(L, 3, 0, 0) != 0)
+						return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
+				}
+			}
+		}
+		pop(L, 1);
+	}
+
+	for (const auto& config : wand_gc) {
+		const std::string& gcv = config.first;
+		int lt = config.second;
+
+		getfield(L, 3, gcv.c_str());
+		if (type(L, -1) != LUA_TNIL && type(L, -1) == lt)
+		{
+			if (lt == LUA_TNUMBER)
+			{
+				double num = (gcv.c_str() == "reload_time") ? tonumber(L, -1) : (int)tonumber(L, -1);
+				getglobal(L, "ComponentObjectSetValue2");
+				pushinteger(L, ac);
+				pushstring(L, "gun_config");
+				pushstring(L, gcv.c_str());
+				pushnumber(L, num);
+				if (pcall(L, 4, 0, 0) != 0)
+					return error(L, "ComponentObjectSetValue2 Error: %s", tolstring(L, -1, NULL));
+			}
+		}
+		pop(L, 1);
+	}
+
+	for (const auto& sprite : wand_sc) {
+		const std::string& scv = sprite.first;
+		int lt = sprite.second;
+
+		getfield(L, 4, scv.c_str());
+		if (type(L, -1) != LUA_TNIL && type(L, -1) == lt)
+		{
+			if (lt == LUA_TSTRING)
+			{
+				if (scv == "sprite") {
+					const char* spr = tolstring(L, -1, NULL);
+					getglobal(L, "ComponentSetValue2");
+					pushinteger(L, ac);
+					pushstring(L, "sprite_file");
+					pushstring(L, spr);
+					if (pcall(L, 3, 0, 0) != 0)
+						return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
+					getglobal(L, "ComponentSetValue2");
+					pushinteger(L, sc);
+					pushstring(L, "image_file");
+					pushstring(L, spr);
+					if (pcall(L, 3, 0, 0) != 0)
+						return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
+				}
+
+				if (scv == "ui_name") {
+					const char* name = tolstring(L, -1, NULL);
+					getglobal(L, "ComponentSetValue2");
+					pushinteger(L, ac);
+					pushstring(L, "ui_name");
+					pushstring(L, name);
+					if (pcall(L, 3, 0, 0) != 0)
+						return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
+				}
+			}
+			else if (lt == LUA_TNUMBER) {
+				int offset = tointeger(L, -1);
+				getglobal(L, "ComponentSetValue2");
+				pushinteger(L, sc);
+				pushstring(L, scv.c_str());
+				pushinteger(L, offset);
+				if (pcall(L, 3, 0, 0) != 0)
+					return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
+			}
+		}
+		pop(L, 1);
+	}
+
+	return 0;
 }
 
 int EntityGetChild(lua_State* L) {

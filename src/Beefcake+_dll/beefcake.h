@@ -1,10 +1,12 @@
 #ifndef BEEFCAKE_H
 #define BEEFCAKE_H
 #include "hlua.h"
+#include <map>
 
 // Globals
 int AddSpellToWand(lua_State* L);
 int CreateWand(lua_State* L);
+int EditWand(lua_State* L);
 int EntityGetChild(lua_State* L);
 int ForceSeed(lua_State* L);
 int GenomeGetHerdId(lua_State* L);

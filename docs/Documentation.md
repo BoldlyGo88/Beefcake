@@ -46,7 +46,7 @@
 [GetPosition / SetPosition](localplayer/gpos.md)<br>
 [GetSpentGold](localplayer/gsg.md)<br>
 [GetStomachFullness / SetStomachFullness](localplayer/gsf.md)<br>
-[GetStomachSize / SetStomachSize](localplayer/gss.md)<br>
+[GetStomachSize / SetStomachSize](localplayaer/gss.md)<br>
 
 ## Noita Modding Library
 

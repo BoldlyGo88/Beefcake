@@ -42,6 +42,10 @@ For the average users (people wanting to mod, or use mods) setting up Beefcake i
 
 Lua can be executed through the console once the game starts.
 
+## Documentation
+
+Full documentation can be found [here](docs/Documentation.md)
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE.md)
