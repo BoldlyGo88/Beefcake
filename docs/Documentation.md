@@ -3,50 +3,50 @@
 ## Globals
 
 #### Functions
-[AddSpellToWand](global/astw.md)
-[CreateWand](global/cw.md)
-[EditWand](global/ew.md)
-[EntityGetChild](global/egc.md)
-[ForceSeed](global/fs.md)
-[GenomeGetHerdId](global/gghi.md)
-[print](global/print.md)
-[SetWorldTime](global/swt.md)
-[SpawnFlask](global/sf.md)
-[SpawnPerk](global/sp.md)
-[SpawnSpell](global/ss.md)
+[AddSpellToWand](global/astw.md)<br>
+[CreateWand](global/cw.md)<br>
+[EditWand](global/ew.md)<br>
+[EntityGetChild](global/egc.md)<br>
+[ForceSeed](global/fs.md)<br>
+[GenomeGetHerdId](global/gghi.md)<br>
+[print](global/print.md)<br>
+[SetWorldTime](global/swt.md)<br>
+[SpawnFlask](global/sf.md)<br>
+[SpawnPerk](global/sp.md)<br>
+[SpawnSpell](global/ss.md)<br>
 
 #### Variables
-[cdd](global/cdd.md)
-[inf](global/inf.md)
-[rfd](global/rfd.md)
+[cdd](global/cdd.md)<br>
+[inf](global/inf.md)<br>
+[rfd](global/rfd.md)<br>
 
 ## Input Library
 
 #### Functions
-[KeyDown](input/kd.md)
-[LeftMouseDown](input/lmd.md)
-[RightMouseDown](input/rmd.md)
+[KeyDown](input/kd.md)<br>
+[LeftMouseDown](input/lmd.md)<br>
+[RightMouseDown](input/rmd.md)<br>
 
 ## LocalPlayer Library
 
 #### Functions
-[AddPerk](localplayer/ap.md)
-[GetAir / SetAir](localplayer/ga.md)
-[GetClimbHeight / SetClimbHeight](localplayer/gch.md)
-[GetGold / SetGold](localplayer/gg.md)
-[GetHealth / SetHealth](localplayer/gh.md)
-[GetId)](localplayer/gid.md)
-[GetInventory](localplayer/ginv.md)
-[GetIsIgnored / SetIsIgnored](localplayer/gii.md)
-[GetJetpack / SetJetpack](localplayer/gj.md)
-[GetJetpackRecharge](localplayer/gjr.md)
-[GetMaxAir / SetMaxAir](localplayer/gma.md)
-[GetMaxHealth / SetMaxHealth](localplayer/gmh.md)
-[GetNeedsAir / SetNeedsAir](localplayer/gna.md)
-[GetPosition / SetPosition](localplayer/gpos.md)
-[GetSpentGold](localplayer/gsg.md)
-[GetStomachFullness / SetStomachFullness](localplayer/gsf.md)
-[GetStomachSize / SetStomachSize](localplayer/gss.md)
+[AddPerk](localplayer/ap.md)<br>
+[GetAir / SetAir](localplayer/ga.md)<br>
+[GetClimbHeight / SetClimbHeight](localplayer/gch.md)<br>
+[GetGold / SetGold](localplayer/gg.md)<br>
+[GetHealth / SetHealth](localplayer/gh.md)<br>
+[GetId)](localplayer/gid.md)<br>
+[GetInventory](localplayer/ginv.md)<br>
+[GetIsIgnored / SetIsIgnored](localplayer/gii.md)<br>
+[GetJetpack / SetJetpack](localplayer/gj.md)<br>
+[GetJetpackRecharge](localplayer/gjr.md)<br>
+[GetMaxAir / SetMaxAir](localplayer/gma.md)<br>
+[GetMaxHealth / SetMaxHealth](localplayer/gmh.md)<br>
+[GetNeedsAir / SetNeedsAir](localplayer/gna.md)<br>
+[GetPosition / SetPosition](localplayer/gpos.md)<br>
+[GetSpentGold](localplayer/gsg.md)<br>
+[GetStomachFullness / SetStomachFullness](localplayer/gsf.md)<br>
+[GetStomachSize / SetStomachSize](localplayer/gss.md)<br>
 
 ## Noita Modding Library
 
@@ -54,19 +54,19 @@ These functions are stock functions included with Noita, however they are normal
 only during mod init, but they are now unrestricted and can be used whenever.
 
 #### Functions
-[ModDevGenerateSpriteUVsForDirectory](modding/long.md)
-[ModLuaFileAppend](modding/mlfa.md)
-[ModMagicNumbersFileAdd](modding/mmn.md)
-[ModMaterialsFileAdd](modding/mmfa.md)
-[ModRegisterAudioEventMappings](modding/mraem.md)
-[ModTextFileGetContent](modding/tfgc.md)
-[ModTextFileWhoSetContent](modding/wsc.md)
-[ModTextSetFileContent](modding/sfc.md)
+[ModDevGenerateSpriteUVsForDirectory](modding/long.md)<br>
+[ModLuaFileAppend](modding/mlfa.md)<br>
+[ModMagicNumbersFileAdd](modding/mmn.md)<br>
+[ModMaterialsFileAdd](modding/mmfa.md)<br>
+[ModRegisterAudioEventMappings](modding/mraem.md)<br>
+[ModTextFileGetContent](modding/tfgc.md)<br>
+[ModTextFileWhoSetContent](modding/wsc.md)<br>
+[ModTextSetFileContent](modding/sfc.md)<br>
 
 ## Task Library
 
 #### Functions
-[ExecuteTL](task/etl.md)
-[ForceIBB](task/fibb.md)
-[GetCFunctionPointer](task/gcf.md)
-[GetState](task/gs.md)
+[ExecuteTL](task/etl.md)<br>
+[ForceIBB](task/fibb.md)<br>
+[GetCFunctionPointer](task/gcf.md)<br>
+[GetState](task/gs.md)<br>
