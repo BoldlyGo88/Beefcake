@@ -42,6 +42,10 @@ For the average users (people wanting to mod, or use mods) setting up Beefcake i
 
 Lua can be executed through the console once the game starts.
 
+## Example Mods
+
+Some example mods can be found [here](mods/Mods.md)
+
 ## Documentation
 
 Full documentation can be found [here](docs/Documentation.md)

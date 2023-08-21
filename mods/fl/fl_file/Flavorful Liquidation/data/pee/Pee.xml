@@ -1,0 +1,9 @@
+<Entity name="PEE_ENTITY">
+	<LuaComponent
+		script_source_file="data/pee/UrineMaster.lua"
+		vm_type="ONE_PER_COMPONENT_INSTANCE"
+		enable_coroutines="1"
+		execute_on_added="1"
+		execute_every_n_frame="1"
+	></LuaComponent>
+</Entity>

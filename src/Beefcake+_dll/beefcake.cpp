@@ -1471,7 +1471,7 @@ int ExecuteThroughLoader(lua_State* L) {
 	pushstring(L, "data/scripts/empty.lua");
 	std::string skript = script;
 	std::string encode = "\nComponentSetValue2(og_lua, 'enable_coroutines', '0'); ComponentSetValue2(og_lua, 'vm_type', 'ONE_PER_COMPONENT_INSTANCE'); ComponentSetValue2(og_lua, 'execute_every_n_frame', 80); ComponentSetValue2(og_lua, 'script_source_file', 'data/scripts/magic/player_biome_check.lua'); ModTextSetFileContent('data/scripts/empty.lua','');";
-	std::string code = "local og_lua = EntityGetFirstComponent(LocalPlayer.GetID(),'LuaComponent');\n" + skript + encode;
+	std::string code = "local og_lua = EntityGetFirstComponent(LocalPlayer.GetId(),'LuaComponent');\n" + skript + encode;
 	pushstring(L, code.c_str());
 	if (pcall(L, 2, 0, 0) != 0)
 		return error(L, "ModTextSetFileContent Error: %s", tolstring(L, -1, NULL));
