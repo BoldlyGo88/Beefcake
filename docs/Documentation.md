@@ -7,7 +7,6 @@
 [CreateWand](global/cw.md)<br>
 [EditWand](global/ew.md)<br>
 [EntityGetChild](global/egc.md)<br>
-[ForceSeed](global/fs.md)<br>
 [GenomeGetHerdId](global/gghi.md)<br>
 [print](global/print.md)<br>
 [SetWorldTime](global/swt.md)<br>
@@ -46,7 +45,8 @@
 [GetPosition / SetPosition](localplayer/gpos.md)<br>
 [GetSpentGold](localplayer/gsg.md)<br>
 [GetStomachFullness / SetStomachFullness](localplayer/gsf.md)<br>
-[GetStomachSize / SetStomachSize](localplayaer/gss.md)<br>
+[GetStomachSize / SetStomachSize](localplayer/gss.md)<br>
+[IsPolymorphed](localplayer/ip.md)<br>
 
 ## Noita Modding Library
 
@@ -67,6 +67,5 @@ only during mod init, but they are now unrestricted and can be used whenever.
 
 #### Functions
 [ExecuteTL](task/etl.md)<br>
-[ForceIBB](task/fibb.md)<br>
 [GetCFunctionPointer](task/gcf.md)<br>
 [GetState](task/gs.md)<br>

@@ -27,7 +27,6 @@ lua_pushstring pushstring = NULL;
 lua_pushvalue pushvalue = NULL;
 lua_rawgeti rawgeti = NULL;
 luaL_ref ref = NULL;
-luaL_register lregister = NULL;
 lua_resume resume = NULL;
 lua_setfield setfield = NULL;
 lua_setmetatable setmetatable = NULL;
@@ -74,7 +73,6 @@ void hlua_init() {
 	pushvalue = (lua_pushvalue)(lua_base + lua_offsets::e_pushvalue);
 	rawgeti = (lua_rawgeti)(lua_base + lua_offsets::e_rawgeti);
 	ref = (luaL_ref)(lua_base + lua_offsets::e_ref);
-	lregister = (luaL_register)(lua_base + lua_offsets::e_register);
 	resume = (lua_resume)(lua_base + lua_offsets::e_resume);
 	setfield = (lua_setfield)(lua_base + lua_offsets::e_setfield);
 	setmetatable = (lua_setmetatable)(lua_base + lua_offsets::e_setmetatable);

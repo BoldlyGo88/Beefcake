@@ -20,18 +20,19 @@ BACK:
     std::getline(std::cin, debug_command);
     if (debug_command == "test")
     {
-        getfield(state, LUA_GLOBALSINDEX, "GamePrintImportant");
-        pushstring(state, "TEST MESSAGE");
-        pushstring(state, "Sent through console!");
-        pcall(state, 2, 0, 0);
+        getfield(L, LUA_GLOBALSINDEX, "GamePrintImportant");
+        pushstring(L, "TEST MESSAGE");
+        pushstring(L, "Sent through console!");
+        pcall(L, 2, 0, 0);
 
         goto BACK;
     }
     else {
-        loadstring(state, debug_command.c_str());
-        pcall(state, 0, -1, 0);
+        loadstring(L, debug_command.c_str());
+        pcall(L, 0, -1, 0);
         goto BACK;
     }
+    goto BACK;
     return 0;
 }
 

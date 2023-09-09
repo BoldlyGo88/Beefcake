@@ -450,15 +450,6 @@ int EntityGetChild(lua_State* L) {
 	return 1;
 }
 
-int ForceSeed(lua_State* L) {
-	if (gettop(L) != 1 || type(L, 1) != LUA_TNUMBER)
-		return error(L, "Argument Error: %s", tolstring(L, -1, NULL));
-
-	int seed = tointeger(L, 1);
-	writeINT(noita_base + nlua_offsets::world_seed, seed);
-	return 0;
-}
-
 int GenomeGetHerdId(lua_State* L) {
 	if (gettop(L) != 1 || type(L, 1) != LUA_TNUMBER)
 		return error(L, "Argument Error: %s", tolstring(L, -1, NULL));
@@ -515,7 +506,8 @@ int SetWorldTime(lua_State* L) {
 
 	double time = tonumber(L, 1);
 	getglobal(L, "GameGetWorldStateEntity");
-	call(L, 0, 1); // todo: fix
+	if (pcall(L, 0, 1, 0) != 0)
+		return error(L, "GameGetWorldStateEntity Error: %s", tolstring(L, -1, NULL));
 	int world = tointeger(L, -1);
 	pop(L, 1);
 	getglobal(L, "EntityGetFirstComponent");
@@ -1043,6 +1035,7 @@ int GetPlayerQInventory(lua_State* L) {
 		if (type(L, -2) != LUA_TNIL)
 		{
 			int child = tointeger(L, -1);
+			pop(L, 1);
 			getglobal(L, "EntityGetName");
 			pushinteger(L, child);
 			if (pcall(L, 1, 1, 0) != 0)
@@ -1050,12 +1043,12 @@ int GetPlayerQInventory(lua_State* L) {
 			if (isstring(L, -1))
 			{
 				const char* child_name = tolstring(L, -1, NULL);
+				pop(L, 1);
 				if (strcmp(child_name, "inventory_quick") == 0)
 				{
 					return 2;
 				}
 			}
-			pop(L, 1);
 		}
 		pop(L, 1);
 	}
@@ -1113,6 +1106,45 @@ int GetPlayerStomachSize(lua_State* L) {
 	pop(L, 1);
 	pushnumber(L, size);
 	return 1;
+}
+
+int IsPolymorphed(lua_State* L) {
+	int top = gettop(L);
+	bool isplayer = false;
+	int entity = 0;
+	getglobal(L, "EntityGetWithTag");
+	pushstring(L, "polymorphed");
+	if (pcall(L, 1, 1, 0) != 0)
+		return error(L, "EntityGetWithTag Error: %s", tolstring(L, -1, NULL));
+	if (type(L, -1) == LUA_TTABLE)
+	{
+		pushnil(L);
+		while (next(L, -2) != 0)
+		{
+			entity = tointeger(L, -1);
+			pop(L, 1);
+			getglobal(L, "EntityGetFirstComponent");
+			pushinteger(L, entity);
+			pushstring(L, "GameStatsComponent");
+			if(pcall(L, 2, 1, 0) != 0)
+				return error(L, "EntityGetFirstComponent Error: %s", tolstring(L, -1, NULL));
+			int stats = tointeger(L, -1);
+			pop(L, 1);
+			getglobal(L, "ComponentGetValue2");
+			pushinteger(L, stats);
+			pushstring(L, "is_player");
+			if (pcall(L, 2, 1, 0) != 0)
+				return error(L, "ComponentGetValue2 Error: %s", tolstring(L, -1, NULL));
+			if(type(L, -1) == LUA_TBOOLEAN)
+				isplayer = toboolean(L, -1);
+			pop(L, 1);
+		}
+	}
+	
+	settop(L, top);
+	pushboolean(L, isplayer);
+	pushinteger(L, entity);
+	return 2;
 }
 
 int SetIgnored(lua_State* L) {
@@ -1500,21 +1532,6 @@ int ExecuteThroughLoader(lua_State* L) {
 	if (pcall(L, 3, 0, 0) != 0)
 		return error(L, "ComponentSetValue2 Error: %s", tolstring(L, -1, NULL));
 	settop(L, 0);
-	return 0;
-}
-
-int ForceIsBetaBuild(lua_State* L) {
-	if (gettop(L) != 1 || type(L, 1) != LUA_TBOOLEAN)
-		return error(L, "Argument Error: %s", tolstring(L, -1, NULL));
-
-	bool beta = toboolean(L, 1);
-	if (beta == true)
-	{
-		writeINT(noita_base + nlua_offsets::isbetabuild, 0);
-	}
-	else {
-		writeINT(noita_base + nlua_offsets::isbetabuild, 1);
-	}
 	return 0;
 }
 

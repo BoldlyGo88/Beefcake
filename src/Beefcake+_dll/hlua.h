@@ -31,13 +31,11 @@
 
 #define nregister(L,n,f) (pushcfunction(L, (f)), setglobal(L, (n)))
 #define vregister(L,t,n,v) (t(L, v), setglobal(L, n))
+#define tregister(L,f,i,s) (pushcfunction(L, (f)), setfield(L,i,(s)))
 #define pushcfunction(L,f)	pushcclosure(L, (f), 0)
 #define setglobal(L,s)	setfield(L, LUA_GLOBALSINDEX, (s))
 #define getglobal(L,s)	getfield(L, LUA_GLOBALSINDEX, (s))
 #define pop(L,n)		settop(L, -(n)-1)
-#define newtable(L)		createtable(L, 0, 0)
-
-
 
 typedef struct lua_State lua_State;
 typedef int(__cdecl* lua_CFunction)(lua_State* L);
@@ -69,7 +67,6 @@ typedef void(__cdecl* lua_pushstring)(lua_State* L, const char* str);
 typedef void(__cdecl* lua_pushvalue)(lua_State* L, int idx);
 typedef void(__cdecl* lua_rawgeti)(lua_State* L, int idx, int n);
 typedef int(__cdecl* luaL_ref)(lua_State* L, int t);
-typedef void(__cdecl* luaL_register)(lua_State* L, const char* libname, const luaL_Reg* l);
 typedef int(__cdecl* lua_resume)(lua_State* L, int narg);
 typedef void(__cdecl* lua_setfield)(lua_State* L, int idx, const char* k);
 typedef void(__cdecl* lua_setmetatable)(lua_State* L, int index);
@@ -111,7 +108,6 @@ extern lua_pushstring pushstring;
 extern lua_pushvalue pushvalue;
 extern lua_rawgeti rawgeti;
 extern luaL_ref ref;
-extern luaL_register lregister;
 extern lua_resume resume;
 extern lua_setfield setfield;
 extern lua_setmetatable setmetatable;

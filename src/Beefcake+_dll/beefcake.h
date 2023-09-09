@@ -8,7 +8,6 @@ int AddSpellToWand(lua_State* L);
 int CreateWand(lua_State* L);
 int EditWand(lua_State* L);
 int EntityGetChild(lua_State* L);
-int ForceSeed(lua_State* L);
 int GenomeGetHerdId(lua_State* L);
 int Print(lua_State* L);
 int SetWorldTime(lua_State* L);
@@ -41,6 +40,7 @@ int GetPlayerPos(lua_State* L);
 int GetPlayerQInventory(lua_State* L);
 int GetPlayerStomachFullness(lua_State* L);
 int GetPlayerStomachSize(lua_State* L);
+int IsPolymorphed(lua_State* L);
 int SetIgnored(lua_State* L);
 int SetPlayerAir(lua_State* L);
 int SetPlayerAirM(lua_State* L);
@@ -56,7 +56,6 @@ int SetPlayerStomachSize(lua_State* L);
 
 // Task library
 int ExecuteThroughLoader(lua_State* L);
-int ForceIsBetaBuild(lua_State* L);
 int GetCFunctionPointer(lua_State* L);
 int GetState(lua_State* L);
 

@@ -6,9 +6,9 @@ of the restrictions imposed by the original.
 Beefcake uses Noitas existing modloader (which means it supports ALL existing mods) and includes plenty
 of custom functions to make coding less bloated and easier to read.
 
-Latest release supported version: Jun 19 2023 Build
+Latest release supported version: Aug 29 2023 Build
 
-Latest compiled supported version: Jun 19 2023 Build
+Latest compiled supported version: Aug 29 2023 Build
 
 ## Setting up
 

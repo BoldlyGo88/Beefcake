@@ -145,13 +145,12 @@
     <ClCompile Include="beefcake.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="hlua.cpp" />
-    <ClCompile Include="libmem\libmem.cpp" />
     <ClCompile Include="nlua.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="beefcake.h" />
     <ClInclude Include="hlua.h" />
-    <ClInclude Include="libmem\libmem.hpp" />
+    <ClInclude Include="memory.h" />
     <ClInclude Include="nlua.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
