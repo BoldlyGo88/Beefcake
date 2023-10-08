@@ -22,23 +22,23 @@ For the average users (people wanting to mod, or use mods) setting up Beefcake i
 
 1. Navigate to Noitas directory
 
-![](https://github.com/WadeBA/Beefcake/blob/main/exampleimg/example1.png)
+![](exampleimg/example1.png)
 
 2. Create a new folder named "beefcake" inside of Noitas directory
 
-![](https://github.com/WadeBA/Beefcake/blob/main/exampleimg/example2.png)
+![](exampleimg/example2.png)
 
 3. Download and extract both setup.bat and remove.bat and Beefcake+.dll (the main api) into the beefcake folder and then run the setup.bat
    
-![](https://github.com/WadeBA/Beefcake/blob/main/exampleimg/example3.png)
+![](exampleimg/example3.png)
 
 4. Launch Noita & you should be greeted with the Beefcake Console
 
-![](https://github.com/WadeBA/Beefcake/blob/main/exampleimg/example4.png)
+![](exampleimg/example4.png)
 
 5. Start a new run/game and enjoy modding!
 
-![](https://github.com/WadeBA/Beefcake/blob/main/exampleimg/example5.png)
+![](exampleimg/example5.png)
 
 Lua can be executed through the console once the game starts.
 
